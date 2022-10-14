@@ -12,7 +12,7 @@ public class Attribute
 {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Integer id;
+	private Long id;
 
 	@NotNull
 	@Size(min = 1, max = 50)

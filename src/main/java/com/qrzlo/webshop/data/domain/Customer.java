@@ -21,9 +21,6 @@ public class Customer
 	@Size(min = 1, max = 60)
 	private String username;
 	@NotNull
-	@Size(min = 1, max = 255)
-	private String password;
-	@NotNull
 	@Size(min = 6, max = 200)
 	private String email;
 	@NotNull

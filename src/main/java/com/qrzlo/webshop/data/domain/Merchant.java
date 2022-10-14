@@ -22,13 +22,8 @@ public class Merchant
 	@Size(min = 1, max = 100)
 	private String brand;
 	@NotNull
-	@Size(min = 1, max = 255)
-	private String password;
-	@NotNull
 	@Size(max = 10000)
 	private String description;
-	@Size(max = 50)
-	private String delivery;
 	@NotNull
 	@Column(name = "CREATED_AT")
 	private LocalDateTime createdAt = LocalDateTime.now();
