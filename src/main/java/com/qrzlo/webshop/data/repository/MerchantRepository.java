@@ -5,4 +5,5 @@ import org.springframework.data.repository.CrudRepository;
 
 public interface MerchantRepository extends CrudRepository<Merchant, Integer>
 {
+	Merchant findMerchantByEmail(String emailAsUsername);
 }

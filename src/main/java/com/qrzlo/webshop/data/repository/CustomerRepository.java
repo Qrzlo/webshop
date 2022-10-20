@@ -7,4 +7,5 @@ import java.util.Set;
 
 public interface CustomerRepository extends CrudRepository<Customer, Long>
 {
+	Customer findCustomerByEmail(String emailAsUsername);
 }

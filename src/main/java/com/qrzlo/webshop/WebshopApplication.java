@@ -14,7 +14,7 @@ import org.springframework.context.annotation.Bean;
 
 import java.util.UUID;
 
-@SpringBootApplication(exclude = {SecurityAutoConfiguration.class})
+@SpringBootApplication
 public class WebshopApplication
 {
 
@@ -28,36 +28,40 @@ public class WebshopApplication
 	{
 		return args ->
 		{
-			if (customerRepository.count() < 1)
-			{
-				for (int i = 0; i < 10; i++)
-				{
-					String random = UUID.randomUUID().toString();
-					String email = random.replace("-", "");
-					Customer customer = new Customer();
-					customer.setUsername("user" + (1+i));
-					customer.setEmail(email);
-					Basket basket = new Basket();
-					basket.setCustomer(customer);
-					customer.setBasket(basket);
-					customerRepository.save(customer);
-					basketRepository.save(basket);
-				}
+//			basketRepository.deleteAll();
+//			customerRepository.deleteAll();
+//			merchantRepository.deleteAll();
 
-			}
-			if (merchantRepository.count() < 1)
-			{
-				for (int i = 0; i < 10; i++)
-				{
-					String random = UUID.randomUUID().toString();
-					String email = random.replace("-", "");
-					Merchant merchant = new Merchant();
-					merchant.setEmail(email);
-					merchant.setBrand("brand" + (1+i));
-					merchant.setDescription("some description");
-					merchantRepository.save(merchant);
-				}
-			}
+//			if (customerRepository.count() < 1)
+//			{
+//				for (int i = 0; i < 10; i++)
+//				{
+//					String random = UUID.randomUUID().toString();
+//					String email = random.replace("-", "");
+//					Customer customer = new Customer();
+//					customer.setName("user" + (1+i));
+//					customer.setEmail(email);
+//					Basket basket = new Basket();
+//					basket.setCustomer(customer);
+//					customer.setBasket(basket);
+//					customerRepository.save(customer);
+//					basketRepository.save(basket);
+//				}
+//
+//			}
+//			if (merchantRepository.count() < 1)
+//			{
+//				for (int i = 0; i < 10; i++)
+//				{
+//					String random = UUID.randomUUID().toString();
+//					String email = random.replace("-", "");
+//					Merchant merchant = new Merchant();
+//					merchant.setEmail(email);
+//					merchant.setBrand("brand" + (1+i));
+//					merchant.setDescription("some description");
+//					merchantRepository.save(merchant);
+//				}
+//			}
 
 		};
 	}

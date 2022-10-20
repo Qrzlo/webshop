@@ -6,6 +6,7 @@ import com.qrzlo.webshop.data.repository.BasketRepository;
 import com.qrzlo.webshop.data.repository.CustomerRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,18 +19,22 @@ import javax.validation.ValidationException;
 @RequestMapping(path = "/api/customer", produces = "application/json", consumes = "application/json")
 public class CustomerAPI
 {
+	private PasswordEncoder passwordEncoder;
 	private CustomerRepository customerRepository;
 	private BasketRepository basketRepository;
 
-	public CustomerAPI(CustomerRepository customerRepository, BasketRepository basketRepository)
+	public CustomerAPI(PasswordEncoder passwordEncoder, CustomerRepository customerRepository, BasketRepository basketRepository)
 	{
+		this.passwordEncoder = passwordEncoder;
 		this.customerRepository = customerRepository;
 		this.basketRepository = basketRepository;
 	}
 
-	@PostMapping
+	@PostMapping()
 	public ResponseEntity<?> save(@RequestBody @Validated Customer customer)
 	{
+		System.out.println("customer is being saved");
+		customer.setPassword(passwordEncoder.encode(customer.getPassword()));
 		Basket basket = new Basket();
 		basket.setCustomer(customer);
 		customer.setBasket(basket);
@@ -44,7 +49,7 @@ public class CustomerAPI
 		// 2. with the catch: exception catched here. Postman gets the string message specified below
 		catch (ValidationException e)
 		{
-			System.out.println("Customer is not valid!!");
+			System.out.println("Customer is not valid");
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("error message");
 		}
