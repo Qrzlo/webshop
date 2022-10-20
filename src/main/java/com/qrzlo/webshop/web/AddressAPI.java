@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping(path = "/address", produces = "application/json", consumes = "application/json")
+@RequestMapping(path = "/api/address", produces = "application/json", consumes = "application/json")
 public class AddressAPI
 {
 	private AddressRepository addressRepository;

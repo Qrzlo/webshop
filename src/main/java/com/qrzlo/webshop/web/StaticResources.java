@@ -18,4 +18,10 @@ public class StaticResources
 	{
 		return "customer.html";
 	}
+
+	@GetMapping("/merchant")
+	public String merchant()
+	{
+		return "merchant.html";
+	}
 }

@@ -33,7 +33,6 @@ public class CustomerAPI
 	@PostMapping()
 	public ResponseEntity<?> save(@RequestBody @Validated Customer customer)
 	{
-		System.out.println("customer is being saved");
 		customer.setPassword(passwordEncoder.encode(customer.getPassword()));
 		Basket basket = new Basket();
 		basket.setCustomer(customer);
@@ -49,7 +48,6 @@ public class CustomerAPI
 		// 2. with the catch: exception catched here. Postman gets the string message specified below
 		catch (ValidationException e)
 		{
-			System.out.println("Customer is not valid");
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("error message");
 		}

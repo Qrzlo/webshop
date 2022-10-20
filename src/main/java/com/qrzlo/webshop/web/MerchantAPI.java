@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.ValidationException;
 
 @RestController
-@RequestMapping(path = "/merchant", produces = "application/json", consumes = "application/json")
+@RequestMapping(path = "/api/merchant", produces = "application/json", consumes = "application/json")
 public class MerchantAPI
 {
 	private PasswordEncoder passwordEncoder;

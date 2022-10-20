@@ -7,11 +7,14 @@ import com.qrzlo.webshop.data.repository.MerchantRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+
+import java.util.List;
 
 import static com.qrzlo.webshop.security.SecurityConstant.MERCHANT_ROLE;
 
@@ -33,7 +36,6 @@ public class SecurityConfig
 			Merchant merchant = merchantRepository.findMerchantByEmail(email);
 			if (customer == null)
 			{
-				System.out.println("customer is null");
 				if (merchant == null)
 				{
 					throw new UsernameNotFoundException("email: " + email + " is not found");
@@ -72,7 +74,7 @@ public class SecurityConfig
 						.usernameParameter("email").passwordParameter("password")
 						.successHandler((request, response, authentication) ->
 						{
-							var authorities = authentication.getAuthorities();
+							List<String> authorities = authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();
 							if (authorities.contains(SecurityConstant.CUSTOMER_AUTHORITY))
 							{
 								response.sendRedirect("/customer");
@@ -81,9 +83,15 @@ public class SecurityConfig
 							{
 								response.sendRedirect("/merchant");
 							}
+							else if (authorities.contains(SecurityConstant.ADMIN_AUTHORITY))
+							{
+								response.sendRedirect("/admin");
+							}
+							else
+							{
+								response.sendRedirect("/");
+							}
 						})
-//						.successForwardUrl("/customer")
-//						.defaultSuccessUrl("/customer", true)
 						.failureHandler((request, response, exception) ->
 						{
 							System.out.println("in failure handler!! this is not working..");
