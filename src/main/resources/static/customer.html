@@ -5,8 +5,16 @@
 	<title>Customer page</title>
 </head>
 <body>
+	
 	<h1>This is the customer page.</h1>
 	<p>Only logged in users can see this page.</p>
 	<img src="/img/img.png" height="500">
+	<form id="form" method="POST" action="/api/address">
+		<label>street</label><input type="text" name="street"/>
+		<label>city</label><input type="text" name="city"/>
+		<label>postal</label><input type="text" name="postalCode"/>
+		<label>country</label><input type="text" name="country"/>
+		<input type="submit" placeholder="submit"/>
+	</form>
 </body>
 </html>

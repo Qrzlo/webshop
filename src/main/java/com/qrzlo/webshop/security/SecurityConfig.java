@@ -16,8 +16,6 @@ import org.springframework.security.web.SecurityFilterChain;
 
 import java.util.List;
 
-import static com.qrzlo.webshop.security.SecurityConstant.MERCHANT_ROLE;
-
 @Configuration
 public class SecurityConfig
 {
@@ -66,7 +64,8 @@ public class SecurityConfig
 		return httpSecurity
 				.authorizeRequests()
 					.mvcMatchers("/customer", "/customer/**").hasRole(SecurityConstant.CUSTOMER_ROLE)
-					.mvcMatchers("/merchant", "/merchant/**").hasRole(MERCHANT_ROLE)
+					.mvcMatchers("/merchant", "/merchant/**").hasRole(SecurityConstant.MERCHANT_ROLE)
+					.mvcMatchers("/api/address/**").hasRole(SecurityConstant.CUSTOMER_ROLE)
 					.anyRequest().permitAll()
 				.and()
 					.formLogin()

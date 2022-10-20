@@ -13,6 +13,7 @@ import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 @Data
@@ -37,7 +38,7 @@ public class Customer implements UserDetails
 	@OneToOne(cascade = CascadeType.ALL, mappedBy = "customer", optional = false)
 	private Basket basket;
 	@JsonIgnore
-	@OneToMany(cascade = CascadeType.PERSIST, mappedBy = "customer")
+	@OneToMany(cascade = CascadeType.PERSIST, mappedBy = "customer", fetch = FetchType.EAGER)
 	private Set<Address> addresses;
 	@JsonIgnore
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "customer")
@@ -47,6 +48,26 @@ public class Customer implements UserDetails
 	@NotNull
 	@Size(max = 1000)
 	private String password;
+
+	public boolean addAddress(Address newAddress)
+	{
+		return this.addresses.add(newAddress);
+	}
+
+	@Override
+	public boolean equals(Object o)
+	{
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		Customer customer = (Customer) o;
+		return id.equals(customer.id);
+	}
+
+	@Override
+	public int hashCode()
+	{
+		return Objects.hash(id);
+	}
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities()

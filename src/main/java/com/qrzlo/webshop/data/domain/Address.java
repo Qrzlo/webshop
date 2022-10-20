@@ -27,7 +27,7 @@ public class Address
 	@Size(min = 2, max = 2)
 	private String country;
 
-	@ManyToOne(optional = false, cascade = CascadeType.PERSIST)
+	@ManyToOne(optional = false)
 	@JoinColumn(name = "CUSTOMER")
 	private Customer customer;
 
