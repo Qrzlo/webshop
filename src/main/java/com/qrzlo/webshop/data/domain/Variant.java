@@ -26,6 +26,11 @@ public class Variant
 	@Min(0)
 	@Column(name = "REFERENCE_PRICE")
 	private Double referencePrice;
+	// use AOP for VariantAPI:
+	// assume that after one tx, only one or zero variant can exist for a product
+	// then after each update/create/delete of the variants, use AOP
+	// to see whether the singular variant has been changed, if so, change
+	// the default price of the product as well.
 
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "PRODUCT")

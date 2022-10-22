@@ -8,5 +8,5 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 
 public interface ProductRepository extends PagingAndSortingRepository<Product, Long>
 {
-	Page<Product> findProductsByCategoriesContaining(Category category, Pageable pageable);
+	Page<Product> findProductsByCategories(Category category, Pageable pageable);
 }

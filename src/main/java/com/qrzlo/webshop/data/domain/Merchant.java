@@ -36,7 +36,6 @@ public class Merchant implements UserDetails
 	@Column(name = "CREATED_AT")
 	private LocalDateTime createdAt = LocalDateTime.now();
 
-	@JsonIgnore
 	@NotNull
 	@Size(max = 1000)
 	private String password;

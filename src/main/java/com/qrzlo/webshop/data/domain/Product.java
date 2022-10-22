@@ -1,5 +1,6 @@
 package com.qrzlo.webshop.data.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -26,24 +27,29 @@ public class Product
 	@Size(max = 10000)
 	private String description;
 	@NotNull
-	@Min(0)
-	private Double referencePrice;
-	@NotNull
 	@Column(name = "FOR_SALE_FROM")
 	private LocalDateTime forSaleFrom = LocalDateTime.now();
+	@Min(0)
+	@Column(name = "DEFAULT_PRICE")
+	private Double defaultPrice;
 
+	@JsonIgnore
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "product")
 	private Set<Variant> variants;
+	@JsonIgnore
 	@ManyToMany()
 	@JoinTable(name = "PRODUCT_CATEGORY",
 			joinColumns = @JoinColumn(name = "CATEGORY"),
 			inverseJoinColumns = @JoinColumn(name = "PRODUCT"))
 	private Set<Category> categories;
+	@JsonIgnore
 	@ManyToOne
 	@JoinColumn(name = "SERIES")
 	private Series series;
+	@JsonIgnore
 	@OneToMany(mappedBy = "product", fetch = FetchType.EAGER)
 	private Set<Dimension> dimensions;
+	@JsonIgnore
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "product")
 	@OrderBy("createdAt ASC")
 	private List<Review> reviews;

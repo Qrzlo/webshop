@@ -6,6 +6,7 @@ import com.qrzlo.webshop.data.repository.CustomerRepository;
 import com.qrzlo.webshop.data.repository.MerchantRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -66,6 +67,8 @@ public class SecurityConfig
 					.mvcMatchers("/customer", "/customer/**").hasRole(SecurityConstant.CUSTOMER_ROLE)
 					.mvcMatchers("/merchant", "/merchant/**").hasRole(SecurityConstant.MERCHANT_ROLE)
 					.mvcMatchers("/api/address/**").hasRole(SecurityConstant.CUSTOMER_ROLE)
+					.mvcMatchers(HttpMethod.POST, "/api/product/").hasRole(SecurityConstant.MERCHANT_ROLE)
+					.mvcMatchers(HttpMethod.GET, "/api/product/").permitAll()
 					.anyRequest().permitAll()
 				.and()
 					.formLogin()
