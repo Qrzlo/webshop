@@ -7,6 +7,7 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @Entity
@@ -37,4 +38,6 @@ public class Purchase
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "ADDRESS")
 	private Address address;
+	@OneToMany(mappedBy = "purchase", fetch = FetchType.EAGER)
+	private List<PurchaseItem> purchaseItems;
 }

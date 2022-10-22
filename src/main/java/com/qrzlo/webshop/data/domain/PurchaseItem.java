@@ -1,33 +1,31 @@
 package com.qrzlo.webshop.data.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import javax.persistence.*;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
-import java.time.LocalDateTime;
 
 @Data
 @Entity
-public class BasketItem
+public class PurchaseItem
 {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
 	@NotNull
-	@Min(value = 1, message = "An amount of 0 means deleting this item from the basket")
+	@Min(0)
 	private Integer amount;
-	@NotNull
-	@Column(name = "ADDED_AT")
-	private LocalDateTime addedAt = LocalDateTime.now();
 
+	@JsonIgnore
 	@ManyToOne(optional = false)
-	@JoinColumn(name = "BASKET")
-	private Basket basket;
+	@JoinColumn(name = "PURCHASE")
+	private Purchase purchase;
 
+	@JsonIgnore
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "INVENTORY")
 	private Inventory inventory;
-
 }
