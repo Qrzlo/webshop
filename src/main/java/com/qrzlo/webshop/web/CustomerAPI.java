@@ -5,6 +5,7 @@ import com.qrzlo.webshop.data.domain.Customer;
 import com.qrzlo.webshop.data.repository.BasketRepository;
 import com.qrzlo.webshop.data.repository.CustomerRepository;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.annotation.Validated;
@@ -16,7 +17,9 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.ValidationException;
 
 @RestController
-@RequestMapping(path = "/api/customer", produces = "application/json", consumes = "application/json")
+@RequestMapping(path = "/api/customer",
+		produces = {MediaType.APPLICATION_JSON_VALUE},
+		consumes = {MediaType.APPLICATION_JSON_VALUE})
 public class CustomerAPI
 {
 	private PasswordEncoder passwordEncoder;
@@ -31,7 +34,7 @@ public class CustomerAPI
 	}
 
 	@PostMapping()
-	public ResponseEntity<?> save(@RequestBody @Validated Customer customer)
+	public ResponseEntity<?> create(@RequestBody @Validated Customer customer)
 	{
 		customer.setPassword(passwordEncoder.encode(customer.getPassword()));
 		Basket basket = new Basket();
@@ -44,7 +47,7 @@ public class CustomerAPI
 			return ResponseEntity.status(HttpStatus.CREATED).body(created);
 		}
 		// without the @Validated in param:
-//		// 1. without the catch: 500 will be returned auto by spring, exception stacktrace in console
+		// 1. without the catch: 500 will be returned auto by spring, exception stacktrace in console
 		// 2. with the catch: exception catched here. Postman gets the string message specified below
 		catch (ValidationException e)
 		{

@@ -11,10 +11,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 @Data
 @Entity
@@ -38,13 +35,14 @@ public class Customer implements UserDetails
 	@OneToOne(cascade = CascadeType.ALL, mappedBy = "customer", optional = false)
 	private Basket basket;
 	@JsonIgnore
-	@OneToMany(cascade = CascadeType.PERSIST, mappedBy = "customer", fetch = FetchType.EAGER)
+	@OneToMany(mappedBy = "customer", fetch = FetchType.EAGER)
 	private Set<Address> addresses;
 	@JsonIgnore
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "customer")
 	@OrderBy("createdAt ASC")
 	private List<Purchase> purchases;
 
+	@JsonIgnore
 	@NotNull
 	@Size(max = 1000)
 	private String password;
@@ -54,12 +52,40 @@ public class Customer implements UserDetails
 		return this.addresses.add(newAddress);
 	}
 
+	public boolean updateAddress(Address newAddress)
+	{
+		if (this.addresses.contains(newAddress))
+		{
+			this.addresses.removeIf(a -> a.equals(newAddress));
+			this.addresses.add(newAddress);
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+
+	public boolean deleteAddress(Address deleteAddress)
+	{
+		if (this.addresses.contains(deleteAddress))
+		{
+			System.out.println("containing this...");
+			return this.addresses.remove(deleteAddress);
+		}
+		else
+		{
+			return false;
+		}
+	}
+
 	@Override
 	public boolean equals(Object o)
 	{
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 		Customer customer = (Customer) o;
+		if (this.id == null) return false;
 		return id.equals(customer.id);
 	}
 
@@ -67,6 +93,17 @@ public class Customer implements UserDetails
 	public int hashCode()
 	{
 		return Objects.hash(id);
+	}
+
+	@Override
+	public String toString()
+	{
+		return "Customer{" +
+				"id=" + id +
+				", name='" + name + '\'' +
+				", email='" + email + '\'' +
+				", createdAt=" + createdAt +
+				'}';
 	}
 
 	@Override

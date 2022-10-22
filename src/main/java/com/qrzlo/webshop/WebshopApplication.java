@@ -3,6 +3,7 @@ package com.qrzlo.webshop;
 import com.qrzlo.webshop.data.domain.Basket;
 import com.qrzlo.webshop.data.domain.Customer;
 import com.qrzlo.webshop.data.domain.Merchant;
+import com.qrzlo.webshop.data.repository.AddressRepository;
 import com.qrzlo.webshop.data.repository.BasketRepository;
 import com.qrzlo.webshop.data.repository.CustomerRepository;
 import com.qrzlo.webshop.data.repository.MerchantRepository;
@@ -24,10 +25,11 @@ public class WebshopApplication
 	}
 
 	@Bean
-	public CommandLineRunner customerAndBasket(CustomerRepository customerRepository, BasketRepository basketRepository, MerchantRepository merchantRepository)
+	public CommandLineRunner customerAndBasket(AddressRepository addressRepository, CustomerRepository customerRepository, BasketRepository basketRepository, MerchantRepository merchantRepository)
 	{
 		return args ->
 		{
+//			addressRepository.deleteAll();
 //			basketRepository.deleteAll();
 //			customerRepository.deleteAll();
 //			merchantRepository.deleteAll();

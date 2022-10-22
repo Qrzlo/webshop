@@ -23,7 +23,7 @@ public class Basket
 	@OneToOne(optional = false)
 	@JoinColumn(name = "CUSTOMER")
 	private Customer customer;
-	@OneToMany(fetch = FetchType.EAGER, mappedBy = "basket", cascade = CascadeType.PERSIST)
+	@OneToMany(fetch = FetchType.EAGER, mappedBy = "basket")
 	@Size(min = 0)
 	@OrderBy("addedAt ASC")
 	private List<BasketItem> basketItems;

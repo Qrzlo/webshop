@@ -2,6 +2,7 @@ package com.qrzlo.webshop.web;
 
 import com.qrzlo.webshop.data.domain.Merchant;
 import com.qrzlo.webshop.data.repository.MerchantRepository;
+import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,7 +13,9 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.ValidationException;
 
 @RestController
-@RequestMapping(path = "/api/merchant", produces = "application/json", consumes = "application/json")
+@RequestMapping(path = "/api/merchant",
+		produces = {MediaType.APPLICATION_JSON_VALUE},
+		consumes = {MediaType.APPLICATION_JSON_VALUE})
 public class MerchantAPI
 {
 	private PasswordEncoder passwordEncoder;
@@ -39,4 +42,5 @@ public class MerchantAPI
 			return null;
 		}
 	}
+
 }

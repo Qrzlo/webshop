@@ -27,10 +27,6 @@ public class BasketItem
 	private Basket basket;
 
 	@ManyToOne(optional = false)
-	@JoinColumn(name = "VARIANT")
-	private Variant variant;
-
-	@ManyToOne(optional = false)
 	@JoinColumn(name = "INVENTORY")
 	private Inventory inventory;
 

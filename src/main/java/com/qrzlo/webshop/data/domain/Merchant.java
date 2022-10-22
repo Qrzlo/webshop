@@ -1,5 +1,6 @@
 package com.qrzlo.webshop.data.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.qrzlo.webshop.security.SecurityConstant;
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
@@ -12,6 +13,7 @@ import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 @Data
 @Entity
@@ -34,9 +36,37 @@ public class Merchant implements UserDetails
 	@Column(name = "CREATED_AT")
 	private LocalDateTime createdAt = LocalDateTime.now();
 
+	@JsonIgnore
 	@NotNull
 	@Size(max = 1000)
 	private String password;
+
+	@Override
+	public boolean equals(Object o)
+	{
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		Merchant merchant = (Merchant) o;
+		if (this.id == null) return false;
+		return id.equals(merchant.id);
+	}
+
+	@Override
+	public int hashCode()
+	{
+		return Objects.hash(id);
+	}
+
+	@Override
+	public String toString()
+	{
+		return "Merchant{" +
+				"id=" + id +
+				", email='" + email + '\'' +
+				", brand='" + brand + '\'' +
+				", createdAt=" + createdAt +
+				'}';
+	}
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities()
