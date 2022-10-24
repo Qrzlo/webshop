@@ -5,11 +5,13 @@ import com.qrzlo.webshop.data.domain.Dimension;
 import com.qrzlo.webshop.data.domain.Variant;
 import org.springframework.data.repository.CrudRepository;
 
+import java.util.Optional;
 import java.util.Set;
 
 public interface AttributeRepository extends CrudRepository<Attribute, Long>
 {
 	Set<Attribute> findAttributesByVariant(Variant variant);
 	Set<Attribute> findAttributesByDimension(Dimension dimension);
+	Attribute findAttributeByDimensionAndVariant(Dimension dimension, Variant variant);
 	void deleteAttributeByVariant(Variant variant);
 }
