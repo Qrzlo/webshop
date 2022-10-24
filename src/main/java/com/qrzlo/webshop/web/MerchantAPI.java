@@ -36,7 +36,7 @@ public class MerchantAPI
 			Merchant created = merchantRepository.save(merchant);
 			return created;
 		}
-		catch (ValidationException e)
+		catch (Exception e)
 		{
 			e.printStackTrace();
 			return null;

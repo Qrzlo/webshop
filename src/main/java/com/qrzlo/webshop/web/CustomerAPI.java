@@ -49,7 +49,7 @@ public class CustomerAPI
 		// without the @Validated in param:
 		// 1. without the catch: 500 will be returned auto by spring, exception stacktrace in console
 		// 2. with the catch: exception catched here. Postman gets the string message specified below
-		catch (ValidationException e)
+		catch (Exception e)
 		{
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("error message");

@@ -7,6 +7,7 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 @Data
@@ -43,4 +44,30 @@ public class Variant
 	@OneToMany(mappedBy = "variant", fetch = FetchType.EAGER)
 	@OrderBy("price ASC")
 	private Set<Inventory> inventories;
+
+	@Override
+	public boolean equals(Object o)
+	{
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		Variant variant = (Variant) o;
+		return Objects.equals(id, variant.id);
+	}
+
+	@Override
+	public int hashCode()
+	{
+		return Objects.hash(id);
+	}
+
+	@Override
+	public String toString()
+	{
+		return "Variant{" +
+				"id=" + id +
+				", singular=" + singular +
+				", extraDescription='" + extraDescription + '\'' +
+				", referencePrice=" + referencePrice +
+				'}';
+	}
 }

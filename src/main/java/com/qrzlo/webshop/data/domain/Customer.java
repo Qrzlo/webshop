@@ -85,8 +85,7 @@ public class Customer implements UserDetails
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 		Customer customer = (Customer) o;
-		if (this.id == null) return false;
-		return id.equals(customer.id);
+		return Objects.equals(id, customer.id);
 	}
 
 	@Override

@@ -43,8 +43,7 @@ public class Address
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 		Address address = (Address) o;
-		if (this.id == null) return false;
-		return id.equals(address.id);
+		return Objects.equals(id, address.id);
 	}
 
 	@Override

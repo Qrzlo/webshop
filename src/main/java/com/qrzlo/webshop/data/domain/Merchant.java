@@ -46,8 +46,7 @@ public class Merchant implements UserDetails
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 		Merchant merchant = (Merchant) o;
-		if (this.id == null) return false;
-		return id.equals(merchant.id);
+		return Objects.equals(id, merchant.id);
 	}
 
 	@Override

@@ -9,11 +9,11 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 @Data
 @Entity
-@Table(name = "product")
 public class Product
 {
 
@@ -34,13 +34,11 @@ public class Product
 	private Double defaultPrice;
 
 	@JsonIgnore
-	@OneToMany(cascade = CascadeType.ALL, mappedBy = "product")
+	@OneToMany(mappedBy = "product")
 	private Set<Variant> variants;
 	@JsonIgnore
-	@ManyToMany()
-	@JoinTable(name = "PRODUCT_CATEGORY",
-			joinColumns = @JoinColumn(name = "CATEGORY"),
-			inverseJoinColumns = @JoinColumn(name = "PRODUCT"))
+	@ManyToMany
+	@JoinTable
 	private Set<Category> categories;
 	@JsonIgnore
 	@ManyToOne
@@ -53,4 +51,31 @@ public class Product
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "product")
 	@OrderBy("createdAt ASC")
 	private List<Review> reviews;
+
+	@Override
+	public boolean equals(Object o)
+	{
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		Product product = (Product) o;
+		return Objects.equals(id, product.id);
+	}
+
+	@Override
+	public int hashCode()
+	{
+		return Objects.hash(id);
+	}
+
+	@Override
+	public String toString()
+	{
+		return "Product{" +
+				"id=" + id +
+				", name='" + name + '\'' +
+				", description='" + description + '\'' +
+				", forSaleFrom=" + forSaleFrom +
+				", defaultPrice=" + defaultPrice +
+				'}';
+	}
 }

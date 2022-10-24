@@ -41,7 +41,7 @@ public class AddressAPI
 			addressRepository.save(address);
 			return ResponseEntity.status(HttpStatus.CREATED).body(address);
 		}
-		catch (ValidationException e)
+		catch (Exception e)
 		{
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);

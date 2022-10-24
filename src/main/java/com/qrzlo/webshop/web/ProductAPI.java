@@ -9,11 +9,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.ValidationException;
+import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
 
@@ -37,15 +38,14 @@ public class ProductAPI
 	{
 		try
 		{
-			productRepository.save(product);
-			return ResponseEntity.ok(product);
+			var newProduct = productRepository.save(product);
+			return ResponseEntity.ok(newProduct);
 		}
-		catch (ValidationException e)
+		catch (Exception e)
 		{
 			e.printStackTrace();
-			return ResponseEntity.badRequest().body(null);
+			return ResponseEntity.badRequest().build();
 		}
-
 	}
 
 	@GetMapping
@@ -73,6 +73,70 @@ public class ProductAPI
 		else // there is a filter on category. currently only category can be filtered, although date could also be
 		{
 			return ResponseEntity.ok(productRepository.findProductsByCategories(category.get(), pageable));
+		}
+	}
+
+	@GetMapping("/{id}")
+	public ResponseEntity<Product> readOne(@PathVariable Integer id)
+	{
+		try
+		{
+			Product product = productRepository.findById(id).orElseThrow();
+			product.getCategories().forEach(System.out::println);
+			return ResponseEntity.ok(product);
+		}
+		catch (NoSuchElementException e)
+		{
+			return ResponseEntity.badRequest().body(null);
+		}
+		catch (Exception e)
+		{
+			return ResponseEntity.badRequest().body(null);
+		}
+	}
+
+	@GetMapping(path = "/search")
+	public ResponseEntity<List<Product>> search(@RequestParam(name = "key") String keyword)
+	{
+		return ResponseEntity.ok(productRepository.findProductsByNameContainsIgnoreCase(keyword));
+	}
+
+	@PutMapping
+	public ResponseEntity<?> update(@RequestBody @Validated Product product)
+	{
+		try
+		{
+			var alteredProduct = productRepository.save(product);
+			return ResponseEntity.ok(alteredProduct);
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			return ResponseEntity.badRequest().build();
+		}
+	}
+
+//	@Transactional
+	// adding many to many relationships: this worked
+	@GetMapping(path = "/relationship/category")
+	public ResponseEntity<?> updateCategoryRelationship(@RequestParam(name = "product") Integer productId,
+														@RequestParam(name = "category") Integer categoryId)
+	{
+		try
+		{
+			Product product = productRepository.findById(productId).orElseThrow();
+			Category category = categoryRepository.findById(categoryId).orElseThrow();
+			boolean success = product.getCategories().add(category);
+			productRepository.save(product);
+			return ResponseEntity.ok(success);
+		}
+		catch (NoSuchElementException e)
+		{
+			return ResponseEntity.notFound().build();
+		}
+		catch (Exception e)
+		{
+			return ResponseEntity.badRequest().build();
 		}
 	}
 }
