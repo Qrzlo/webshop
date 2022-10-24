@@ -32,7 +32,7 @@ public class Customer implements UserDetails
 	private LocalDateTime createdAt = LocalDateTime.now();
 
 	@JsonIgnore
-	@OneToOne(cascade = CascadeType.ALL, mappedBy = "customer", optional = false)
+	@OneToOne(fetch = FetchType.LAZY, mappedBy = "customer", optional = false)
 	private Basket basket;
 	@JsonIgnore
 	@OneToMany(mappedBy = "customer", fetch = FetchType.EAGER)

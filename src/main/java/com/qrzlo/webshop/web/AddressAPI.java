@@ -11,8 +11,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.ValidationException;
-
 @RestController
 @RequestMapping(path = "/api/address",
 		produces = {MediaType.APPLICATION_JSON_VALUE},

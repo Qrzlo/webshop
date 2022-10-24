@@ -1,5 +1,7 @@
 package com.qrzlo.webshop.data.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -20,16 +22,19 @@ public class Basket
 	@Column(name = "LAST_MODIFIED")
 	private LocalDateTime lastModified = LocalDateTime.now();
 
+	@JsonIgnore
 	@OneToOne(optional = false)
 	@JoinColumn(name = "CUSTOMER")
 	private Customer customer;
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	@OneToMany(fetch = FetchType.EAGER, mappedBy = "basket")
-	@Size(min = 0)
 	@OrderBy("addedAt ASC")
 	private List<BasketItem> basketItems;
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
+	private transient Double totalPrice;
 
-	public Double getTotalPrice()
+	public Double updatePrice()
 	{
-		return basketItems.stream().mapToDouble(item -> item.getAmount() * item.getInventory().getPrice()).sum();
+		return this.getBasketItems().stream().mapToDouble(i -> i.getInventory().getPrice()).sum();
 	}
 }
