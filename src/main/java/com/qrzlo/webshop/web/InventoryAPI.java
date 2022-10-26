@@ -35,6 +35,9 @@ public class InventoryAPI
 		{
 			if (merchant.getId() != inventory.getMerchant().getId())
 				throw new Exception("not the same merchant!");
+			var exist = inventoryRepository.findInventoryByVariantAndMerchant(inventory.getVariant(), merchant);
+			if (exist != null)
+				throw new Exception("duplicate inventory entry found");
 			var newInventory = inventoryRepository.save(inventory);
 			return ResponseEntity.ok(newInventory);
 		}

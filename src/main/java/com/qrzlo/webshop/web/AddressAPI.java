@@ -3,7 +3,6 @@ package com.qrzlo.webshop.web;
 import com.qrzlo.webshop.data.domain.Address;
 import com.qrzlo.webshop.data.domain.Customer;
 import com.qrzlo.webshop.data.repository.AddressRepository;
-import com.qrzlo.webshop.data.repository.CustomerRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -18,12 +17,10 @@ import org.springframework.web.bind.annotation.*;
 public class AddressAPI
 {
 	private AddressRepository addressRepository;
-	private CustomerRepository customerRepository;
 
-	public AddressAPI(AddressRepository addressRepository, CustomerRepository customerRepository)
+	public AddressAPI(AddressRepository addressRepository)
 	{
 		this.addressRepository = addressRepository;
-		this.customerRepository = customerRepository;
 	}
 
 	@PostMapping
@@ -33,11 +30,10 @@ public class AddressAPI
 //		when addresses of Customer is lazy loaded, the @AuthenticationPrincipal customer is fetched by a
 //		persistence ctx before this save() is invoked. Then the ctx is closed.
 //		customer becomes detached, and when its addresses is accessed, an exception will be thrown
-		customer.addAddress(address);
 		try
 		{
-			addressRepository.save(address);
-			return ResponseEntity.status(HttpStatus.CREATED).body(address);
+			var newAddress = addressRepository.save(address);
+			return ResponseEntity.status(HttpStatus.CREATED).body(newAddress);
 		}
 		catch (Exception e)
 		{
@@ -56,18 +52,38 @@ public class AddressAPI
 	@PutMapping
 	public ResponseEntity<?> update(@RequestBody @Validated Address address, @AuthenticationPrincipal Customer customer)
 	{
-		address.setCustomer(customer);
-		boolean success = customer.updateAddress(address);
-		addressRepository.save(address);
-		return ResponseEntity.ok(success);
+		try
+		{
+			if (!address.getCustomer().equals(customer))
+				throw new Exception("customer id mismatch");
+			var oldAddress = addressRepository.findById(address.getId()).orElseThrow();
+			if (!oldAddress.getCustomer().equals(customer))
+				throw new Exception("customer id mismatch");
+			var newAddress = addressRepository.save(address);
+			return ResponseEntity.ok(newAddress);
+		}
+		catch (Exception e)
+		{
+			return ResponseEntity.badRequest().build();
+		}
 	}
 
 	@DeleteMapping
-	public ResponseEntity<?> delete(@RequestBody Address address, @AuthenticationPrincipal Customer customer)
+	public ResponseEntity<?> delete(@RequestBody @Validated Address address, @AuthenticationPrincipal Customer customer)
 	{
-		address.setCustomer(null);
-		boolean success = customer.deleteAddress(address);
-		addressRepository.delete(address);
-		return ResponseEntity.ok(success);
+		try
+		{
+			if (!address.getCustomer().equals(customer))
+				throw new Exception("customer id mismatch");
+			var exist = addressRepository.findById(address.getId()).orElseThrow();
+			if (!exist.getCustomer().equals(customer))
+				throw new Exception("customer id mismatch");
+			addressRepository.delete(exist);
+			return ResponseEntity.ok(exist);
+		}
+		catch (Exception e)
+		{
+			return ResponseEntity.badRequest().build();
+		}
 	}
 }

@@ -1,7 +1,9 @@
 package com.qrzlo.webshop.data.domain;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -12,6 +14,7 @@ import java.util.Objects;
 
 @Data
 @Entity
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class BasketItem
 {
 	@Id
@@ -29,7 +32,6 @@ public class BasketItem
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "BASKET")
 	private Basket basket;
-	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "INVENTORY")
 	private Inventory inventory;

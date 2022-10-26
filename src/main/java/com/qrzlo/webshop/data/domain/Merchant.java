@@ -1,6 +1,9 @@
 package com.qrzlo.webshop.data.domain;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.qrzlo.webshop.security.SecurityConstant;
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
@@ -17,6 +20,7 @@ import java.util.Objects;
 
 @Data
 @Entity
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Merchant implements UserDetails
 {
 	@Id
@@ -36,6 +40,7 @@ public class Merchant implements UserDetails
 	@Column(name = "CREATED_AT")
 	private LocalDateTime createdAt = LocalDateTime.now();
 
+	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	@NotNull
 	@Size(max = 1000)
 	private String password;

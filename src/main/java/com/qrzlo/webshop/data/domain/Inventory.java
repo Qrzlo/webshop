@@ -1,6 +1,8 @@
 package com.qrzlo.webshop.data.domain;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -11,6 +13,7 @@ import java.util.Objects;
 
 @Data
 @Entity
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Inventory
 {
 	@Id
@@ -28,11 +31,9 @@ public class Inventory
 	@Column(name = "LAST_MODIFIED")
 	private LocalDateTime lastModified = LocalDateTime.now();
 
-	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "MERCHANT")
 	private Merchant merchant;
-	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "VARIANT")
 	private Variant variant;

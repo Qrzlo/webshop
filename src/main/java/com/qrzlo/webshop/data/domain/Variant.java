@@ -1,5 +1,7 @@
 package com.qrzlo.webshop.data.domain;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -12,6 +14,7 @@ import java.util.Set;
 
 @Data
 @Entity
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Variant
 {
 	@Id
@@ -41,7 +44,7 @@ public class Variant
 	@OneToMany(mappedBy = "variant")
 	@OrderBy("createdAt ASC")
 	private List<MediaFile> mediaFiles;
-	@OneToMany(mappedBy = "variant", fetch = FetchType.EAGER)
+	@OneToMany(mappedBy = "variant")
 	@OrderBy("price ASC")
 	private Set<Inventory> inventories;
 

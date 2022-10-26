@@ -1,6 +1,9 @@
 package com.qrzlo.webshop.data.domain;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -10,6 +13,7 @@ import java.util.Objects;
 
 @Data
 @Entity
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Address
 {
 	@Id
@@ -32,7 +36,7 @@ public class Address
 	@Size(min = 2, max = 2)
 	private String country;
 
-	@JsonIgnore
+	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "CUSTOMER")
 	private Customer customer;

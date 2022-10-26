@@ -1,6 +1,9 @@
 package com.qrzlo.webshop.data.domain;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.qrzlo.webshop.security.SecurityConstant;
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
@@ -15,6 +18,7 @@ import java.util.*;
 
 @Data
 @Entity
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Customer implements UserDetails
 {
 	@Id
@@ -34,50 +38,18 @@ public class Customer implements UserDetails
 	@JsonIgnore
 	@OneToOne(fetch = FetchType.LAZY, mappedBy = "customer", optional = false)
 	private Basket basket;
+//	@JsonIgnore
+//	@OneToMany(mappedBy = "customer", fetch = FetchType.EAGER)
+//	private Set<Address> addresses;
 	@JsonIgnore
-	@OneToMany(mappedBy = "customer", fetch = FetchType.EAGER)
-	private Set<Address> addresses;
-	@JsonIgnore
-	@OneToMany(cascade = CascadeType.ALL, mappedBy = "customer")
+	@OneToMany(mappedBy = "customer")
 	@OrderBy("createdAt ASC")
 	private List<Purchase> purchases;
 
-	@JsonIgnore
+	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	@NotNull
 	@Size(max = 1000)
 	private String password;
-
-	public boolean addAddress(Address newAddress)
-	{
-		return this.addresses.add(newAddress);
-	}
-
-	public boolean updateAddress(Address newAddress)
-	{
-		if (this.addresses.contains(newAddress))
-		{
-			this.addresses.removeIf(a -> a.equals(newAddress));
-			this.addresses.add(newAddress);
-			return true;
-		}
-		else
-		{
-			return false;
-		}
-	}
-
-	public boolean deleteAddress(Address deleteAddress)
-	{
-		if (this.addresses.contains(deleteAddress))
-		{
-			System.out.println("containing this...");
-			return this.addresses.remove(deleteAddress);
-		}
-		else
-		{
-			return false;
-		}
-	}
 
 	@Override
 	public boolean equals(Object o)
