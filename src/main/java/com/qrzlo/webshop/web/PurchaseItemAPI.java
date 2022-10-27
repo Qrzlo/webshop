@@ -57,6 +57,8 @@ public class PurchaseItemAPI
 							throw new Exception("inventory duplicates");
 						inventorySet.add(inventoryId);
 						var inventory = inventoryRepository.findById(inventoryId).orElseThrow();
+						if (inventory.getAmount() < i.getAmount())
+							throw new Exception("inventory is not sufficient for this item");
 						if (!purchase.equals(i.getPurchase()))
 							throw new Exception("purchase item and purchase mismatch");
 						return false;

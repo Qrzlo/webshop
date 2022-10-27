@@ -4,6 +4,7 @@ import com.qrzlo.webshop.data.domain.Customer;
 import com.qrzlo.webshop.data.domain.Purchase;
 import com.qrzlo.webshop.data.domain.PurchaseItem;
 import com.qrzlo.webshop.data.repository.AddressRepository;
+import com.qrzlo.webshop.data.repository.InventoryRepository;
 import com.qrzlo.webshop.data.repository.PurchaseItemRepository;
 import com.qrzlo.webshop.data.repository.PurchaseRepository;
 import org.springframework.http.MediaType;
@@ -23,12 +24,14 @@ public class PurchaseAPI
 	private PurchaseRepository purchaseRepository;
 	private AddressRepository addressRepository;
 	private PurchaseItemRepository purchaseItemRepository;
+	private InventoryRepository inventoryRepository;
 
-	public PurchaseAPI(PurchaseRepository purchaseRepository, AddressRepository addressRepository, PurchaseItemRepository purchaseItemRepository)
+	public PurchaseAPI(PurchaseRepository purchaseRepository, AddressRepository addressRepository, PurchaseItemRepository purchaseItemRepository, InventoryRepository inventoryRepository)
 	{
 		this.purchaseRepository = purchaseRepository;
 		this.addressRepository = addressRepository;
 		this.purchaseItemRepository = purchaseItemRepository;
+		this.inventoryRepository = inventoryRepository;
 	}
 
 	@PostMapping("/initialize")
@@ -91,6 +94,12 @@ public class PurchaseAPI
 				throw new Exception("prices are not calculated");
 			purchase.setStatus(Purchase.STATUS.PLACED);
 			purchaseRepository.save(purchase);
+			items.forEach(i ->
+			{
+				var inventory = i.getInventory();
+				inventory.setAmount(inventory.getAmount() - i.getAmount());
+				inventoryRepository.save(inventory);
+			});
 			return ResponseEntity.ok(purchase);
 		}
 		catch (Exception e)
