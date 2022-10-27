@@ -38,9 +38,6 @@ public class Customer implements UserDetails
 	@JsonIgnore
 	@OneToOne(fetch = FetchType.LAZY, mappedBy = "customer", optional = false)
 	private Basket basket;
-//	@JsonIgnore
-//	@OneToMany(mappedBy = "customer", fetch = FetchType.EAGER)
-//	private Set<Address> addresses;
 	@JsonIgnore
 	@OneToMany(mappedBy = "customer")
 	@OrderBy("createdAt ASC")

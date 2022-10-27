@@ -2,6 +2,7 @@ package com.qrzlo.webshop.data.domain;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.Data;
 
@@ -22,12 +23,11 @@ public class PurchaseItem
 	@Min(0)
 	private Integer amount;
 
-	@JsonIgnore
+//	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "PURCHASE")
 	private Purchase purchase;
 
-	@JsonIgnore
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "INVENTORY")
 	private Inventory inventory;
