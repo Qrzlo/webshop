@@ -2,7 +2,9 @@ package com.qrzlo.webshop.data.domain;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.qrzlo.webshop.data.Views;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -15,26 +17,30 @@ import java.util.Objects;
 
 @Data
 @Entity
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+@JsonIdentityInfo(scope = Purchase.class, generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Purchase
 {
+	@JsonView(Views.Purchase.class)
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
+	@JsonView(Views.Purchase.class)
 	@NotNull
 	@Column(name = "CREATED_AT")
 	private LocalDateTime createdAt = LocalDateTime.now();
+	@JsonView(Views.Purchase.class)
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	@NotNull
+	@Enumerated(EnumType.STRING)
 	private STATUS status = STATUS.PLACED;
+	@JsonView(Views.Purchase.class)
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
-	@NotNull
 	@Min(0)
 	@Column(name = "TOTAL_PRICE", columnDefinition = "double(10, 2)")
 	private Double totalPrice;
+	@JsonView(Views.Purchase.class)
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
-	@NotNull
 	@Min(0)
 	@Column(name = "PAID_PRICE", columnDefinition = "double(10, 2)")
 	private Double paidPrice;
@@ -43,22 +49,24 @@ public class Purchase
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "CUSTOMER")
 	private Customer customer;
-	@ManyToOne
+	@JsonView(Views.Purchase.class)
+	@ManyToOne(optional = true)
 	@JoinColumn(name = "ADDRESS")
 	private Address address;
+	@JsonView(Views.Purchase.class)
 	@OneToMany(mappedBy = "purchase")
 	private List<PurchaseItem> purchaseItems;
 
-	public Double updatePrice()
-	{
-		Double price = 0.0;
-		for (PurchaseItem purchaseItem : this.purchaseItems)
-		{
-			price += purchaseItem.getInventory().getPrice();
-		}
-		this.totalPrice = price;
-		return price;
-	}
+//	public Double updatePrice()
+//	{
+//		Double price = 0.0;
+//		for (PurchaseItem purchaseItem : this.purchaseItems)
+//		{
+//			price += purchaseItem.getInventory().getPrice() * purchaseItem.getAmount();
+//		}
+//		this.totalPrice = price;
+//		return price;
+//	}
 
 	public enum STATUS
 	{

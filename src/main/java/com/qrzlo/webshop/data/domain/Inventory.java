@@ -1,8 +1,7 @@
 package com.qrzlo.webshop.data.domain;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.annotation.*;
+import com.qrzlo.webshop.data.Views;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -13,16 +12,19 @@ import java.util.Objects;
 
 @Data
 @Entity
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+@JsonIdentityInfo(scope= Inventory.class, generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Inventory
 {
+	@JsonView({Views.Basket.class, Views.Product.class})
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
+	@JsonView({Views.Basket.class, Views.Product.class})
 	@NotNull
 	@Min(0)
 	private Integer amount;
+	@JsonView({Views.Basket.class, Views.Product.class, Views.Purchase.class})
 	@NotNull
 	@Min(0)
 	@Column(columnDefinition = "double(10, 2)")
@@ -31,9 +33,11 @@ public class Inventory
 	@Column(name = "LAST_MODIFIED")
 	private LocalDateTime lastModified = LocalDateTime.now();
 
+	@JsonView({Views.Product.class, Views.Purchase.class})
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "MERCHANT")
 	private Merchant merchant;
+	@JsonView({Views.Basket.class, Views.Purchase.class})
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "VARIANT")
 	private Variant variant;

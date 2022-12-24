@@ -1,9 +1,7 @@
 package com.qrzlo.webshop.data.domain;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.annotation.*;
+import com.qrzlo.webshop.data.Views;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -12,22 +10,23 @@ import javax.validation.constraints.NotNull;
 
 @Data
 @Entity
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+@JsonIdentityInfo(scope = PurchaseItem.class, generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class PurchaseItem
 {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
+	@JsonView(Views.Purchase.class)
 	@NotNull
 	@Min(0)
 	private Integer amount;
 
-//	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "PURCHASE")
 	private Purchase purchase;
 
+	@JsonView(Views.Purchase.class)
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "INVENTORY")
 	private Inventory inventory;

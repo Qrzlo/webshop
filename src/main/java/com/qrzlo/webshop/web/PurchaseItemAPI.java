@@ -39,6 +39,8 @@ public class PurchaseItemAPI
 	{
 		try
 		{
+			// do not send a purchase: {id: x} field
+			// multiple purchaseItems with this same field will result in "already had pojo for id..." error
 			var purchase = getInitializedPurchase(customer, purchaseItems);
 
 			if (!purchaseItemRepository.findPurchaseItemsByPurchase(purchase).isEmpty())
@@ -59,8 +61,10 @@ public class PurchaseItemAPI
 						var inventory = inventoryRepository.findById(inventoryId).orElseThrow();
 						if (inventory.getAmount() < i.getAmount())
 							throw new Exception("inventory is not sufficient for this item");
-						if (!purchase.equals(i.getPurchase()))
+						if (i.getPurchase() != null && !purchase.equals(i.getPurchase()))
 							throw new Exception("purchase item and purchase mismatch");
+						i.setPurchase(purchase);
+						i.setInventory(inventory);
 						return false;
 					}
 					catch (Exception e)
@@ -73,6 +77,11 @@ public class PurchaseItemAPI
 				throw new Exception("some purchase items are invalid");
 			purchaseItemRepository.saveAll(purchaseItems);
 			var newPurchaseItems = purchaseItemRepository.findPurchaseItemsByPurchase(purchase);
+			var totalPrice = purchaseItems.stream()
+					.mapToDouble(i -> i.getInventory().getPrice() * i.getAmount())
+					.sum();
+			purchase.setTotalPrice(totalPrice);
+			purchaseRepository.save(purchase);
 			return ResponseEntity.ok(newPurchaseItems);
 		}
 		catch (Exception e)
@@ -101,16 +110,22 @@ public class PurchaseItemAPI
 	{
 		try
 		{
-			var theOldItem = purchaseItemRepository.findById(purchaseItem.getId()).orElseThrow();
-			var purchase = getInitializedPurchase(customer, List.of(theOldItem, purchaseItem));
-			if (theOldItem.getInventory() != null && !theOldItem.getInventory().equals(purchaseItem.getInventory()))
+			var oldItem = purchaseItemRepository.findById(purchaseItem.getId()).orElseThrow();
+			var purchase = getInitializedPurchase(customer, List.of(oldItem, purchaseItem));
+			if (oldItem.getInventory() != null && !oldItem.getInventory().equals(purchaseItem.getInventory()))
 				throw new Exception("cannot change the inventory here. please restart the whole process again");
 			if (purchaseItem.getAmount() == 0)
 				throw new Exception("please use DELETE to delete the item");
 
-			theOldItem.setAmount(purchaseItem.getAmount());
-			purchaseItemRepository.save(theOldItem);
-			return ResponseEntity.ok(theOldItem);
+			oldItem.setAmount(purchaseItem.getAmount());
+			var newItem = purchaseItemRepository.save(oldItem);
+			var totalPrice = purchase.getPurchaseItems()
+					.stream()
+					.mapToDouble(i -> i.getInventory().getPrice() * i.getAmount())
+					.sum();
+			purchase.setTotalPrice(totalPrice);
+			purchaseRepository.save(purchase);
+			return ResponseEntity.ok(newItem);
 		}
 		catch (Exception e)
 		{
@@ -127,6 +142,12 @@ public class PurchaseItemAPI
 			var theOldItem = purchaseItemRepository.findById(purchaseItem.getId()).orElseThrow();
 			var purchase = getInitializedPurchase(customer, List.of(theOldItem, purchaseItem));
 			purchaseItemRepository.delete(theOldItem);
+			var totalPrice = purchase.getPurchaseItems()
+					.stream()
+					.mapToDouble(i -> i.getInventory().getPrice() * i.getAmount())
+					.sum();
+			purchase.setTotalPrice(totalPrice);
+			purchaseRepository.save(purchase);
 			return ResponseEntity.ok(theOldItem);
 		}
 		catch (Exception e)

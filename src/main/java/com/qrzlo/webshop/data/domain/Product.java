@@ -1,8 +1,7 @@
 package com.qrzlo.webshop.data.domain;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.annotation.*;
+import com.qrzlo.webshop.data.Views;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -16,41 +15,50 @@ import java.util.Set;
 
 @Data
 @Entity
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+//@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Product
 {
 
+	@JsonView({Views.Catalog.class, Views.Basket.class, Views.Product.class})
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 
+	@JsonView({Views.Catalog.class, Views.Basket.class, Views.Product.class, Views.Purchase.class})
 	@NotNull
 	@Size(min = 1, max = 200)
 	private String name;
+	@JsonView(Views.Product.class)
 	@Size(max = 10000)
 	private String description;
+	@JsonView({Views.Catalog.class, Views.Product.class})
 	@NotNull
 	@Column(name = "FOR_SALE_FROM")
 	private LocalDateTime forSaleFrom = LocalDateTime.now();
+	@JsonView({Views.Catalog.class, Views.Product.class})
 	@Min(0)
 	@Column(name = "DEFAULT_PRICE")
 	private Double defaultPrice;
 
-	@JsonIgnore
+	@JsonView({Views.Catalog.class, Views.Product.class})
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	@OneToMany(mappedBy = "product")
 	private Set<Variant> variants;
-	@JsonIgnore
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	@ManyToMany
 	@JoinTable
 	private Set<Category> categories;
-	@JsonIgnore
+	@JsonView(Views.Product.class)
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	@ManyToOne
 	@JoinColumn(name = "SERIES")
 	private Series series;
-	@JsonIgnore
+	@JsonView({Views.Basket.class, Views.Product.class, Views.Purchase.class})
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	@OneToMany(mappedBy = "product", fetch = FetchType.EAGER)
 	private Set<Dimension> dimensions;
-	@JsonIgnore
+	@JsonView(Views.Product.class)
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "product")
 	@OrderBy("createdAt ASC")
 	private List<Review> reviews;

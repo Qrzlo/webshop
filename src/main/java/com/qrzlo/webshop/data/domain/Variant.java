@@ -1,7 +1,9 @@
 package com.qrzlo.webshop.data.domain;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.qrzlo.webshop.data.Views;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -17,15 +19,19 @@ import java.util.Set;
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Variant
 {
+	@JsonView({Views.Basket.class, Views.Product.class})
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
+	@JsonView({Views.Basket.class, Views.Catalog.class, Views.Product.class})
 	@NotNull
 	private Boolean singular;
+	@JsonView(Views.Product.class)
 	@Size(max = 10000)
 	@Column(name = "DESCRIPTION")
 	private String extraDescription;
+	@JsonView(Views.Product.class)
 	@NotNull
 	@Min(0)
 	@Column(name = "REFERENCE_PRICE")
@@ -36,14 +42,18 @@ public class Variant
 	// to see whether the singular variant has been changed, if so, change
 	// the default price of the product as well.
 
+	@JsonView({Views.Basket.class, Views.Purchase.class})
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "PRODUCT")
 	private Product product;
+	@JsonView({Views.Basket.class, Views.Product.class, Views.Purchase.class})
 	@OneToMany(mappedBy = "variant")
 	private Set<Attribute> attributes;
+	@JsonView({Views.Basket.class, Views.Catalog.class, Views.Product.class, Views.Purchase.class})
 	@OneToMany(mappedBy = "variant")
 	@OrderBy("createdAt ASC")
 	private List<MediaFile> mediaFiles;
+	@JsonView(Views.Product.class)
 	@OneToMany(mappedBy = "variant")
 	@OrderBy("price ASC")
 	private Set<Inventory> inventories;

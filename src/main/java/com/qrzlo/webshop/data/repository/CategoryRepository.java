@@ -7,6 +7,7 @@ import java.util.Set;
 
 public interface CategoryRepository extends CrudRepository<Category, Integer>
 {
+	Set<Category> findAll();
 	Set<Category> findCategoriesByNameContaining(String partialName);
 	Set<Category> findCategoriesByParent(Category parent);
 }

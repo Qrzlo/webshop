@@ -7,12 +7,10 @@ import com.qrzlo.webshop.data.repository.CustomerRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.ValidationException;
 
@@ -39,7 +37,7 @@ public class CustomerAPI
 		customer.setPassword(passwordEncoder.encode(customer.getPassword()));
 		Basket basket = new Basket();
 		basket.setCustomer(customer);
-		customer.setBasket(basket);
+//		customer.setBasket(basket);
 		try
 		{
 			Customer created = customerRepository.save(customer);
@@ -54,5 +52,11 @@ public class CustomerAPI
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("error message");
 		}
+	}
+
+	@GetMapping("/session")
+	public ResponseEntity<?> login(@AuthenticationPrincipal Customer customer)
+	{
+		return ResponseEntity.ok(customer);
 	}
 }

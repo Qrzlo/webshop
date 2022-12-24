@@ -1,9 +1,7 @@
 package com.qrzlo.webshop.data.domain;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.annotation.*;
+import com.qrzlo.webshop.data.Views;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -17,13 +15,16 @@ import java.util.Objects;
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class BasketItem
 {
+	@JsonView(Views.Basket.class)
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
+	@JsonView(Views.Basket.class)
 	@NotNull
 	@Min(value = 1, message = "An amount of 0 means deleting this item from the basket")
 	private Integer amount;
+	@JsonView(Views.Basket.class)
 	@NotNull
 	@Column(name = "ADDED_AT")
 	private LocalDateTime addedAt = LocalDateTime.now();
@@ -32,6 +33,7 @@ public class BasketItem
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "BASKET")
 	private Basket basket;
+	@JsonView(Views.Basket.class)
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "INVENTORY")
 	private Inventory inventory;

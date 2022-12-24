@@ -54,11 +54,10 @@ public class AddressAPI
 	{
 		try
 		{
-			if (!address.getCustomer().equals(customer))
-				throw new Exception("customer id mismatch");
 			var oldAddress = addressRepository.findById(address.getId()).orElseThrow();
 			if (!oldAddress.getCustomer().equals(customer))
 				throw new Exception("customer id mismatch");
+			address.setCustomer(customer);
 			var newAddress = addressRepository.save(address);
 			return ResponseEntity.ok(newAddress);
 		}
@@ -68,18 +67,16 @@ public class AddressAPI
 		}
 	}
 
-	@DeleteMapping
-	public ResponseEntity<?> delete(@RequestBody @Validated Address address, @AuthenticationPrincipal Customer customer)
+	@DeleteMapping("/{id}")
+	public ResponseEntity<?> delete(@AuthenticationPrincipal Customer customer, @PathVariable("id") Integer id)
 	{
 		try
 		{
+			var address = addressRepository.findById(id).orElseThrow();
 			if (!address.getCustomer().equals(customer))
 				throw new Exception("customer id mismatch");
-			var exist = addressRepository.findById(address.getId()).orElseThrow();
-			if (!exist.getCustomer().equals(customer))
-				throw new Exception("customer id mismatch");
-			addressRepository.delete(exist);
-			return ResponseEntity.ok(exist);
+			addressRepository.delete(address);
+			return ResponseEntity.ok(address);
 		}
 		catch (Exception e)
 		{

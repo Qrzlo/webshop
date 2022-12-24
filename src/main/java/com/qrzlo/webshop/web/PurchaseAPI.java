@@ -1,18 +1,21 @@
 package com.qrzlo.webshop.web;
 
+import com.fasterxml.jackson.annotation.JsonView;
+import com.qrzlo.webshop.data.Views;
+import com.qrzlo.webshop.data.domain.Address;
 import com.qrzlo.webshop.data.domain.Customer;
 import com.qrzlo.webshop.data.domain.Purchase;
 import com.qrzlo.webshop.data.domain.PurchaseItem;
-import com.qrzlo.webshop.data.repository.AddressRepository;
-import com.qrzlo.webshop.data.repository.InventoryRepository;
-import com.qrzlo.webshop.data.repository.PurchaseItemRepository;
-import com.qrzlo.webshop.data.repository.PurchaseRepository;
+import com.qrzlo.webshop.data.repository.*;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -25,6 +28,8 @@ public class PurchaseAPI
 	private AddressRepository addressRepository;
 	private PurchaseItemRepository purchaseItemRepository;
 	private InventoryRepository inventoryRepository;
+	private BasketRepository basketRepository;
+	private BasketItemRepository basketItemRepository;
 
 	public PurchaseAPI(PurchaseRepository purchaseRepository, AddressRepository addressRepository, PurchaseItemRepository purchaseItemRepository, InventoryRepository inventoryRepository)
 	{
@@ -34,21 +39,56 @@ public class PurchaseAPI
 		this.inventoryRepository = inventoryRepository;
 	}
 
-	@PostMapping("/initialize")
-	public ResponseEntity<?> create(@RequestBody @Validated Purchase purchase,
-									@AuthenticationPrincipal Customer customer)
+	@GetMapping("/initialize")
+	public ResponseEntity<?> create(@AuthenticationPrincipal Customer customer)
 	{
 		try
 		{
-			if (!purchase.getCustomer().equals(customer))
-				throw new Exception("customer id mismatch");
 			var exist = purchaseRepository.findPurchaseByCustomerAndStatus(customer, Purchase.STATUS.INITIALIZED);
 			if (exist.isPresent())
-				throw new Exception("cannot initialize two active purchases");
+				return read(customer);
+			Purchase purchase = new Purchase();
 			purchase.setStatus(Purchase.STATUS.INITIALIZED);
-			purchase.setPurchaseItems(null);
+			purchase.setCustomer(customer);
 			var newPurchase = purchaseRepository.save(purchase);
 			return ResponseEntity.ok(newPurchase);
+		}
+		catch (Exception e)
+		{
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e);
+		}
+	}
+
+	@JsonView(Views.Purchase.class)
+	@GetMapping("/all")
+	public ResponseEntity<?> readAll(@AuthenticationPrincipal Customer customer)
+	{
+		try
+		{
+			var purchases = purchaseRepository.findPurchasesByCustomerOrderByCreatedAt(customer);
+			return ResponseEntity.ok(purchases);
+		}
+		catch (Exception e)
+		{
+			return ResponseEntity.badRequest().build();
+		}
+	}
+
+	@GetMapping("/year")
+	public ResponseEntity<?> readByYear(@RequestParam(name = "year", required = false) Integer year,
+										@AuthenticationPrincipal Customer customer)
+	{
+		try
+		{
+			final Integer THIS_YEAR = LocalDate.now().getYear();
+			if (year == null)
+				year = THIS_YEAR;
+			if (year < 2020 || year > THIS_YEAR)
+				throw new Exception("year is not in range");
+			var from = LocalDateTime.of(year, 1, 1, 0, 0);
+			var to = LocalDateTime.of(year, 12, 31, 23, 59, 59);
+			var purchases = purchaseRepository.findPurchasesByCustomerAndCreatedAtIsBetweenOrderByCreatedAt(customer, from, to);
+			return ResponseEntity.ok(purchases);
 		}
 		catch (Exception e)
 		{
@@ -66,12 +106,16 @@ public class PurchaseAPI
 			if (!items.isEmpty())
 			{
 				initializedPurchase.setPurchaseItems(items);
-				initializedPurchase.updatePrice();
+				var totalPrice = items
+						.stream()
+						.mapToDouble(i -> i.getInventory().getPrice() * i.getAmount())
+						.sum();
+				initializedPurchase.setTotalPrice(totalPrice);
 				if (initializedPurchase.getAddress() != null)
-					initializedPurchase.setPaidPrice(initializedPurchase.getTotalPrice() + 5.0);
+					initializedPurchase.setPaidPrice(initializedPurchase.getTotalPrice() + 5);
 			}
-
-			return ResponseEntity.ok(initializedPurchase);
+			var updatedPurchase = purchaseRepository.save(initializedPurchase);
+			return ResponseEntity.ok(updatedPurchase);
 		}
 		catch (Exception e)
 		{
@@ -100,6 +144,8 @@ public class PurchaseAPI
 				inventory.setAmount(inventory.getAmount() - i.getAmount());
 				inventoryRepository.save(inventory);
 			});
+			var basket = basketRepository.findBasketByCustomer(customer);
+			basket.getBasketItems().forEach(basketItemRepository::delete);
 			return ResponseEntity.ok(purchase);
 		}
 		catch (Exception e)
@@ -109,23 +155,18 @@ public class PurchaseAPI
 	}
 
 	@PutMapping(path = "/address")	// to be changed, @RequestBody as Address
-	public ResponseEntity<?> updateAddress(@RequestBody @Validated Purchase purchase,
-									@AuthenticationPrincipal Customer customer)
+	public ResponseEntity<?> updateAddress(@RequestBody Address address,
+										   @AuthenticationPrincipal Customer customer)
 	{
 		try
 		{
-			if (!purchase.getCustomer().equals(customer))
-				throw new Exception("customer id mismatch");
-			var thePurchase = purchaseRepository.findById(purchase.getId()).orElseThrow();
-			if (!customer.equals(thePurchase.getCustomer()))
-				throw new Exception("you cannot modify a purchase of others");
-			if (thePurchase.getStatus() != Purchase.STATUS.INITIALIZED)
-				throw new Exception("the purchase cannot be modified");
-			var theAddress = addressRepository.findById(purchase.getAddress().getId()).orElseThrow();
+			var initializedPurchase = purchaseRepository.findPurchaseByCustomerAndStatus(customer, Purchase.STATUS.INITIALIZED).orElseThrow();
+			var theAddress = addressRepository.findById(address.getId()).orElseThrow();
 			if (!theAddress.getCustomer().equals(customer))
 				throw new Exception("address is not from the customer");
-			thePurchase.setAddress(theAddress);
-			var newPurchase = purchaseRepository.save(thePurchase);
+			initializedPurchase.setAddress(theAddress);
+			initializedPurchase.setPaidPrice(initializedPurchase.getTotalPrice() + 5);
+			var newPurchase = purchaseRepository.save(initializedPurchase);
 			return ResponseEntity.ok(newPurchase);
 		}
 		catch (Exception e)

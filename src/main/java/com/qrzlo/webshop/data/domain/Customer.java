@@ -35,9 +35,9 @@ public class Customer implements UserDetails
 	@Column(name = "CREATED_AT")
 	private LocalDateTime createdAt = LocalDateTime.now();
 
-	@JsonIgnore
-	@OneToOne(fetch = FetchType.LAZY, mappedBy = "customer", optional = false)
-	private Basket basket;
+//	@JsonIgnore
+//	@OneToOne(fetch = FetchType.LAZY, mappedBy = "customer", optional = false)
+//	private Basket basket;
 	@JsonIgnore
 	@OneToMany(mappedBy = "customer")
 	@OrderBy("createdAt ASC")
@@ -74,42 +74,50 @@ public class Customer implements UserDetails
 				'}';
 	}
 
+
+	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities()
 	{
 		return List.of(new SimpleGrantedAuthority(SecurityConstant.CUSTOMER_AUTHORITY));
 	}
 
+	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	@Override
 	public String getPassword()
 	{
 		return password;
 	}
 
+	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	@Override
 	public String getUsername()
 	{
 		return email;
 	}
 
+	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	@Override
 	public boolean isAccountNonExpired()
 	{
 		return true;
 	}
 
+	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	@Override
 	public boolean isAccountNonLocked()
 	{
 		return true;
 	}
 
+	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	@Override
 	public boolean isCredentialsNonExpired()
 	{
 		return true;
 	}
 
+	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	@Override
 	public boolean isEnabled()
 	{

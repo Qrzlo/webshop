@@ -13,5 +13,4 @@ public interface AttributeRepository extends CrudRepository<Attribute, Long>
 	Set<Attribute> findAttributesByVariant(Variant variant);
 	Set<Attribute> findAttributesByDimension(Dimension dimension);
 	Attribute findAttributeByDimensionAndVariant(Dimension dimension, Variant variant);
-	void deleteAttributeByVariant(Variant variant);
 }

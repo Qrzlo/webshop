@@ -37,16 +37,23 @@ public class BasketItemAPI
 		try
 		{
 			var basket = basketRepository.findBasketByCustomer(customer);
-			if (!basket.equals(basketItem.getBasket()))
+			if (basketItem.getBasket() != null && !basket.equals(basketItem.getBasket()))
 				throw new Exception("corrupted basket id");
 			inventoryRepository.findById(basketItem.getInventory().getId()).orElseThrow();
 			basket.getBasketItems()
 					.stream()
-					.filter(it -> it.getInventory().equals(basketItem.getInventory())
-							&& it.getBasket().equals(basketItem.getBasket()))
+					.filter(it -> it.getInventory().equals(basketItem.getInventory()))
 					.findAny()
-					.ifPresentOrElse(found -> found.setAmount(found.getAmount() + basketItem.getAmount()),
-							() -> basketItemRepository.save(basketItem));
+					.ifPresentOrElse(found ->
+						{
+							found.setAmount(found.getAmount() + basketItem.getAmount());
+							basketItemRepository.save(found);
+						},
+						() ->
+						{
+							basketItem.setBasket(basket);
+							basketItemRepository.save(basketItem);
+						});
 			System.out.println("basket item saved");
 			basket.setLastModified(LocalDateTime.now());
 			basketRepository.save(basket);
@@ -65,6 +72,46 @@ public class BasketItemAPI
 		{
 			var basketItem = basketItemRepository.findById(basketItemId).orElseThrow();
 			return ResponseEntity.ok(basketItem);
+		}
+		catch (Exception e)
+		{
+			return ResponseEntity.badRequest().build();
+		}
+	}
+
+	@PutMapping
+	public ResponseEntity<?> update(@RequestBody BasketItem basketItem, @AuthenticationPrincipal Customer customer)
+	{
+		try
+		{
+			var basket = basketRepository.findBasketByCustomer(customer);
+			if (basket == null)
+				throw new Exception("no customer found");
+			var index = basket.getBasketItems().indexOf(basketItem);
+			if (index == -1)
+				throw new Exception("item not found");
+			var oldItem = basket.getBasketItems().get(index);
+			oldItem.setAmount(basketItem.getAmount());
+			var newItem = basketItemRepository.save(oldItem);
+			return ResponseEntity.ok(newItem);
+		}
+		catch (Exception e)
+		{
+			return ResponseEntity.badRequest().build();
+		}
+	}
+
+	@DeleteMapping
+	public ResponseEntity<?> delete(@RequestBody BasketItem basketItem, @AuthenticationPrincipal Customer customer)
+	{
+		try
+		{
+			var basket = basketRepository.findBasketByCustomer(customer);
+			var index = basket.getBasketItems().indexOf(basketItem);
+			if (index == -1)
+				throw new Exception("no basket item matches the deletion");
+			basketItemRepository.delete(basket.getBasketItems().get(index));
+			return ResponseEntity.ok().build();
 		}
 		catch (Exception e)
 		{

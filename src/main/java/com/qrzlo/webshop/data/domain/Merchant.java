@@ -1,9 +1,7 @@
 package com.qrzlo.webshop.data.domain;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.annotation.*;
+import com.qrzlo.webshop.data.Views;
 import com.qrzlo.webshop.security.SecurityConstant;
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
@@ -20,9 +18,10 @@ import java.util.Objects;
 
 @Data
 @Entity
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+@JsonIdentityInfo(scope= Merchant.class, generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Merchant implements UserDetails
 {
+	@JsonView(Views.Product.class)
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
@@ -30,6 +29,7 @@ public class Merchant implements UserDetails
 	@NotNull
 	@Size(min = 1, max = 200)
 	private String email;
+	@JsonView({Views.Product.class, Views.Purchase.class})
 	@NotNull
 	@Size(min = 1, max = 100)
 	private String brand;

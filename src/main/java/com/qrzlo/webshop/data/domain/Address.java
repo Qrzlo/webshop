@@ -1,9 +1,7 @@
 package com.qrzlo.webshop.data.domain;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.annotation.*;
+import com.qrzlo.webshop.data.Views;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -13,7 +11,7 @@ import java.util.Objects;
 
 @Data
 @Entity
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+@JsonIdentityInfo(scope = Address.class, generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Address
 {
 	@Id
@@ -23,15 +21,19 @@ public class Address
 //			pkColumnName = "name", valueColumnName = "value")
 	private Integer id;
 
+	@JsonView(Views.Purchase.class)
 	@NotNull
 	@Size(min = 1, max = 60)
 	private String street;
+	@JsonView(Views.Purchase.class)
 	@NotNull
 	@Size(min = 1, max = 60)
 	private String city;
+	@JsonView(Views.Purchase.class)
 	@NotNull
 	@Size(min = 1, max = 30)
 	private String postalCode;
+	@JsonView(Views.Purchase.class)
 	@NotNull
 	@Size(min = 2, max = 2)
 	private String country;

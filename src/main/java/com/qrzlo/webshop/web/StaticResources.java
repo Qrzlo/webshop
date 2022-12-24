@@ -10,21 +10,55 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 public class StaticResources
 {
-	@GetMapping("")
-	public String home()
-	{
-		return "home.html";
-	}
+//	@GetMapping("")
+//	public String home()
+//	{
+//		return "home.html";
+//	}
+//
+//	@GetMapping("/customer")
+//	public String customer()
+//	{
+//		return "customer.html";
+//	}
+//
+//	@GetMapping("/merchant")
+//	public String merchant()
+//	{
+//		return "merchant.html";
+//	}
 
-	@GetMapping("/customer")
-	public String customer()
+	@GetMapping()
+	public String index()
 	{
-		return "customer.html";
+		return "index.html";
 	}
-
-	@GetMapping("/merchant")
-	public String merchant()
-	{
-		return "merchant.html";
-	}
+//
+//
+//	@GetMapping("/account")
+//	public String account()
+//	{
+//		return "index.html";
+//	}
+//
+//
+//	@GetMapping("/product/{id}")
+//	public String product()
+//	{
+//		return "index.html";
+//	}
+//
+//
+//	@GetMapping("/basket")
+//	public String basket()
+//	{
+//		return "index.html";
+//	}
+//
+//
+//	@GetMapping("/catalog")
+//	public String catalog()
+//	{
+//		return "index.html";
+//	}
 }

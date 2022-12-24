@@ -2,7 +2,9 @@ package com.qrzlo.webshop.data.domain;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.qrzlo.webshop.data.Views;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -12,13 +14,15 @@ import java.util.Objects;
 
 @Data
 @Entity
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+@JsonIdentityInfo(scope = Attribute.class, generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Attribute
 {
+	@JsonView({Views.Basket.class, Views.Product.class})
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
+	@JsonView({Views.Basket.class, Views.Product.class, Views.Purchase.class})
 	@NotNull
 	@Size(min = 1, max = 50)
 	private String value;
@@ -27,6 +31,7 @@ public class Attribute
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "variant")
 	private Variant variant;
+	@JsonView({Views.Basket.class, Views.Product.class, Views.Purchase.class})
 	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "DIMENSION")

@@ -11,10 +11,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Set;
 
@@ -43,22 +40,36 @@ public class ReviewAPI
 	{
 		try
 		{
-			if (!review.getCustomer().equals(customer))
-				throw new Exception("customer id mismatch");
 			var product = productRepository.findById(review.getProduct().getId()).orElseThrow();
 			var exist = reviewRepository.findReviewByCustomerAndProduct(customer, product);
 			if (exist != null)
 				throw new Exception("a review already exists");
 			var purchases = purchaseRepository.findPurchasesByCustomerAndStatusIsIn(customer,
-					Set.of(Purchase.STATUS.CLOSED, Purchase.STATUS.REFUNDED));
+					Set.of(Purchase.STATUS.DELIVERED, Purchase.STATUS.CLOSED, Purchase.STATUS.REFUNDED));
 			purchases.stream()
 					.filter(p -> purchaseItemRepository.findPurchaseItemsByPurchase(p)
 						.stream()
 						.filter(item -> item.getInventory().getVariant().getProduct().equals(product))
 						.findAny().isPresent())
 					.findAny().orElseThrow();
+			review.setCustomer(customer);
 			var newReview = reviewRepository.save(review);
 			return ResponseEntity.ok(newReview);
+		}
+		catch (Exception e)
+		{
+			return ResponseEntity.badRequest().build();
+		}
+	}
+
+	@GetMapping
+	public ResponseEntity<?> read(@RequestParam(name = "product") Integer productId)
+	{
+		try
+		{
+			var product = productRepository.findById(productId).orElseThrow();
+			var reviews = reviewRepository.findReviewsByProductOrderByCreatedAt(product);
+			return ResponseEntity.ok(reviews);
 		}
 		catch (Exception e)
 		{
