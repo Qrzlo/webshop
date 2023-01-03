@@ -3,6 +3,7 @@ package com.qrzlo.webshop.web;
 import com.qrzlo.webshop.data.domain.Address;
 import com.qrzlo.webshop.data.domain.Customer;
 import com.qrzlo.webshop.data.repository.AddressRepository;
+import com.qrzlo.webshop.service.AddressService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -16,71 +17,41 @@ import org.springframework.web.bind.annotation.*;
 		consumes = {MediaType.APPLICATION_JSON_VALUE})
 public class AddressAPI
 {
-	private AddressRepository addressRepository;
+	private AddressService addressService;
 
-	public AddressAPI(AddressRepository addressRepository)
+	public AddressAPI(AddressService addressService)
 	{
-		this.addressRepository = addressRepository;
+		this.addressService = addressService;
 	}
 
 	@PostMapping
 	public ResponseEntity<?> create(@RequestBody @Validated Address address, @AuthenticationPrincipal Customer customer)
 	{
-		address.setCustomer(customer);
 //		when addresses of Customer is lazy loaded, the @AuthenticationPrincipal customer is fetched by a
-//		persistence ctx before this save() is invoked. Then the ctx is closed.
+//		persistence ctx before repository.save() is invoked. Then the ctx is closed.
 //		customer becomes detached, and when its addresses is accessed, an exception will be thrown
-		try
-		{
-			var newAddress = addressRepository.save(address);
-			return ResponseEntity.status(HttpStatus.CREATED).body(newAddress);
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-		}
+		var newAddress = addressService.createAddress(address, customer);
+		return ResponseEntity.status(HttpStatus.CREATED).body(newAddress);
 	}
 
 	@GetMapping
 	public ResponseEntity<?> read(@AuthenticationPrincipal Customer customer)
 	{
-		var addresses = addressRepository.findAddressesByCustomer(customer);
+		var addresses = addressService.readByCustomer(customer);
 		return ResponseEntity.ok().body(addresses);
 	}
 
 	@PutMapping
 	public ResponseEntity<?> update(@RequestBody @Validated Address address, @AuthenticationPrincipal Customer customer)
 	{
-		try
-		{
-			var oldAddress = addressRepository.findById(address.getId()).orElseThrow();
-			if (!oldAddress.getCustomer().equals(customer))
-				throw new Exception("customer id mismatch");
-			address.setCustomer(customer);
-			var newAddress = addressRepository.save(address);
-			return ResponseEntity.ok(newAddress);
-		}
-		catch (Exception e)
-		{
-			return ResponseEntity.badRequest().build();
-		}
+		var newAddress = addressService.updateAddress(address, customer);
+		return ResponseEntity.ok(newAddress);
 	}
 
 	@DeleteMapping("/{id}")
 	public ResponseEntity<?> delete(@AuthenticationPrincipal Customer customer, @PathVariable("id") Integer id)
 	{
-		try
-		{
-			var address = addressRepository.findById(id).orElseThrow();
-			if (!address.getCustomer().equals(customer))
-				throw new Exception("customer id mismatch");
-			addressRepository.delete(address);
-			return ResponseEntity.ok(address);
-		}
-		catch (Exception e)
-		{
-			return ResponseEntity.badRequest().build();
-		}
+		var deletedAddress = addressService.deleteAddress(id, customer);
+		return ResponseEntity.ok(deletedAddress);
 	}
 }
