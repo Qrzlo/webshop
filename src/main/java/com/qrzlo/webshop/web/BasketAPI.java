@@ -3,6 +3,7 @@ package com.qrzlo.webshop.web;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.qrzlo.webshop.data.domain.Customer;
 import com.qrzlo.webshop.data.repository.BasketRepository;
+import com.qrzlo.webshop.service.BasketService;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -17,11 +18,11 @@ import com.qrzlo.webshop.data.Views;
 		produces = {MediaType.APPLICATION_JSON_VALUE})
 public class BasketAPI
 {
-	private BasketRepository basketRepository;
+	private BasketService basketService;
 
-	public BasketAPI(BasketRepository basketRepository)
+	public BasketAPI(BasketService basketService)
 	{
-		this.basketRepository = basketRepository;
+		this.basketService = basketService;
 	}
 
 	@JsonView(Views.Basket.class)
@@ -30,7 +31,7 @@ public class BasketAPI
 	{
 		try
 		{
-			var basket = basketRepository.findBasketByCustomer(customer);
+			var basket = basketService.getBasket(customer);
 			basket.updatePrice();
 			return ResponseEntity.ok(basket);
 		}

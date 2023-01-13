@@ -1,18 +1,15 @@
 package com.qrzlo.webshop.web;
 
+import com.fasterxml.jackson.annotation.JsonView;
+import com.qrzlo.webshop.data.Views;
 import com.qrzlo.webshop.data.domain.BasketItem;
 import com.qrzlo.webshop.data.domain.Customer;
-import com.qrzlo.webshop.data.repository.BasketItemRepository;
-import com.qrzlo.webshop.data.repository.BasketRepository;
-import com.qrzlo.webshop.data.repository.InventoryRepository;
 import com.qrzlo.webshop.service.BasketService;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-import java.time.LocalDateTime;
 
 @RestController
 @RequestMapping(path = "/api/basketitem",
@@ -50,6 +47,7 @@ public class BasketItemAPI
 //		}
 //	}
 
+	@JsonView(Views.Basket.class)
 	@PutMapping
 	public ResponseEntity<?> update(@RequestBody BasketItem basketItem, @AuthenticationPrincipal Customer customer)
 	{

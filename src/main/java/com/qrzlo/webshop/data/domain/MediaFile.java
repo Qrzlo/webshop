@@ -1,9 +1,7 @@
 package com.qrzlo.webshop.data.domain;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.qrzlo.webshop.data.Views;
 import lombok.Data;
 
@@ -15,7 +13,7 @@ import java.util.Objects;
 
 @Data
 @Entity
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+//@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class MediaFile
 {
 	@JsonView(Views.Product.class)
@@ -23,7 +21,7 @@ public class MediaFile
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@JsonView({Views.Product.class, Views.Basket.class, Views.Catalog.class, Views.Purchase.class})
+	@JsonView({Views.Product.class, Views.Basket.class, Views.Catalog.class, Views.Order.class, Views.Checkout.class})
 	@NotNull
 	@Size(min = 10, max = 300)
 	private String url;

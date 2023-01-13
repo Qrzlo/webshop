@@ -19,12 +19,12 @@ import java.util.Set;
 public class Product
 {
 
-	@JsonView({Views.Catalog.class, Views.Basket.class, Views.Product.class})
+	@JsonView({Views.Catalog.class, Views.Basket.class, Views.Product.class, Views.Checkout.class})
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 
-	@JsonView({Views.Catalog.class, Views.Basket.class, Views.Product.class, Views.Purchase.class})
+	@JsonView({Views.Catalog.class, Views.Basket.class, Views.Product.class, Views.Order.class, Views.Checkout.class})
 	@NotNull
 	@Size(min = 1, max = 200)
 	private String name;
@@ -53,7 +53,7 @@ public class Product
 	@ManyToOne
 	@JoinColumn(name = "SERIES")
 	private Series series;
-	@JsonView({Views.Basket.class, Views.Product.class, Views.Purchase.class})
+	@JsonView({Views.Product.class, Views.Order.class})
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	@OneToMany(mappedBy = "product", fetch = FetchType.EAGER)
 	private Set<Dimension> dimensions;

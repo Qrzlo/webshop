@@ -1,9 +1,7 @@
 package com.qrzlo.webshop.data.domain;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.qrzlo.webshop.data.Views;
 import lombok.Data;
 
@@ -14,15 +12,15 @@ import java.util.Objects;
 
 @Data
 @Entity
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+//@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Dimension
 {
-	@JsonView({Views.Product.class, Views.Purchase.class})
+	@JsonView({Views.Product.class, Views.Order.class, Views.Checkout.class})
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 
-	@JsonView({Views.Product.class, Views.Basket.class, Views.Purchase.class})
+	@JsonView({Views.Product.class, Views.Basket.class, Views.Order.class, Views.Checkout.class})
 	@NotNull
 	@Size(min = 1, max = 50)
 	private String name;

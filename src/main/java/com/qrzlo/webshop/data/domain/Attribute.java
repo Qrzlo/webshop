@@ -1,9 +1,7 @@
 package com.qrzlo.webshop.data.domain;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.qrzlo.webshop.data.Views;
 import lombok.Data;
 
@@ -14,15 +12,15 @@ import java.util.Objects;
 
 @Data
 @Entity
-@JsonIdentityInfo(scope = Attribute.class, generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+//@JsonIdentityInfo(scope = Attribute.class, generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Attribute
 {
-	@JsonView({Views.Basket.class, Views.Product.class})
+	@JsonView({Views.Basket.class, Views.Product.class, Views.Checkout.class})
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@JsonView({Views.Basket.class, Views.Product.class, Views.Purchase.class})
+	@JsonView({Views.Basket.class, Views.Product.class, Views.Order.class, Views.Checkout.class})
 	@NotNull
 	@Size(min = 1, max = 50)
 	private String value;
@@ -31,8 +29,7 @@ public class Attribute
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "variant")
 	private Variant variant;
-	@JsonView({Views.Basket.class, Views.Product.class, Views.Purchase.class})
-	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+	@JsonView({Views.Basket.class, Views.Product.class, Views.Order.class, Views.Checkout.class})
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "DIMENSION")
 	private Dimension dimension;

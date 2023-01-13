@@ -10,7 +10,6 @@ import lombok.Data;
 import javax.persistence.*;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
@@ -20,26 +19,26 @@ import java.util.Objects;
 @JsonIdentityInfo(scope = Purchase.class, generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Purchase
 {
-	@JsonView(Views.Purchase.class)
+	@JsonView({Views.Order.class, Views.Checkout.class})
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@JsonView(Views.Purchase.class)
+	@JsonView(Views.Order.class)
 	@NotNull
 	@Column(name = "CREATED_AT")
 	private LocalDateTime createdAt = LocalDateTime.now();
-	@JsonView(Views.Purchase.class)
+	@JsonView(Views.Order.class)
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	@NotNull
 	@Enumerated(EnumType.STRING)
 	private STATUS status = STATUS.PLACED;
-	@JsonView(Views.Purchase.class)
+	@JsonView({Views.Order.class, Views.Checkout.class})
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	@Min(0)
 	@Column(name = "TOTAL_PRICE", columnDefinition = "double(10, 2)")
 	private Double totalPrice;
-	@JsonView(Views.Purchase.class)
+	@JsonView({Views.Order.class, Views.Checkout.class})
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	@Min(0)
 	@Column(name = "PAID_PRICE", columnDefinition = "double(10, 2)")
@@ -49,11 +48,11 @@ public class Purchase
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "CUSTOMER")
 	private Customer customer;
-	@JsonView(Views.Purchase.class)
+	@JsonView({Views.Order.class, Views.Checkout.class})
 	@ManyToOne(optional = true)
 	@JoinColumn(name = "ADDRESS")
 	private Address address;
-	@JsonView(Views.Purchase.class)
+	@JsonView({Views.Order.class, Views.Checkout.class})
 	@OneToMany(mappedBy = "purchase")
 	private List<PurchaseItem> purchaseItems;
 
@@ -100,5 +99,19 @@ public class Purchase
 				'}';
 	}
 }
+//
+//@Data
+//class PurchaseUnfold
+//{
+//	private Long id;
+//	private LocalDateTime createdAt;
+//	private Purchase.STATUS status = Purchase.STATUS.PLACED;
+//	private Double totalPrice;
+//	private Double paidPrice;
+//	private Address address;
+//	private List<PurchaseItem> purchaseItems;
+//
+//
+//}
 
 

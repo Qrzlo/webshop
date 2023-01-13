@@ -12,10 +12,10 @@ import java.util.Objects;
 
 @Data
 @Entity
-@JsonIdentityInfo(scope= Inventory.class, generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+//@JsonIdentityInfo(scope= Inventory.class, generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Inventory
 {
-	@JsonView({Views.Basket.class, Views.Product.class})
+	@JsonView({Views.Basket.class, Views.Product.class, Views.Checkout.class})
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
@@ -24,7 +24,7 @@ public class Inventory
 	@NotNull
 	@Min(0)
 	private Integer amount;
-	@JsonView({Views.Basket.class, Views.Product.class, Views.Purchase.class})
+	@JsonView({Views.Basket.class, Views.Product.class, Views.Order.class, Views.Checkout.class})
 	@NotNull
 	@Min(0)
 	@Column(columnDefinition = "double(10, 2)")
@@ -33,11 +33,11 @@ public class Inventory
 	@Column(name = "LAST_MODIFIED")
 	private LocalDateTime lastModified = LocalDateTime.now();
 
-	@JsonView({Views.Product.class, Views.Purchase.class})
+	@JsonView({Views.Product.class, Views.Order.class})
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "MERCHANT")
 	private Merchant merchant;
-	@JsonView({Views.Basket.class, Views.Purchase.class})
+	@JsonView({Views.Basket.class, Views.Order.class, Views.Checkout.class})
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "VARIANT")
 	private Variant variant;

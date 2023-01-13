@@ -13,7 +13,7 @@ public class StaticResources
 	@GetMapping({"/",
 			"/account",
 			"/catalog",
-			"/product/{id}",
+			"/product/**",
 			"/account",
 			"/login",
 			"/basket",

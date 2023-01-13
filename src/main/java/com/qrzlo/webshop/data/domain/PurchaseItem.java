@@ -17,7 +17,7 @@ public class PurchaseItem
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@JsonView(Views.Purchase.class)
+	@JsonView({Views.Order.class, Views.Checkout.class})
 	@NotNull
 	@Min(0)
 	private Integer amount;
@@ -26,7 +26,7 @@ public class PurchaseItem
 	@JoinColumn(name = "PURCHASE")
 	private Purchase purchase;
 
-	@JsonView(Views.Purchase.class)
+	@JsonView({Views.Order.class, Views.Checkout.class})
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "INVENTORY")
 	private Inventory inventory;

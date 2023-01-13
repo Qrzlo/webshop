@@ -1,5 +1,7 @@
 package com.qrzlo.webshop.web;
 
+import com.fasterxml.jackson.annotation.JsonView;
+import com.qrzlo.webshop.data.Views;
 import com.qrzlo.webshop.data.domain.Customer;
 import com.qrzlo.webshop.data.domain.Purchase;
 import com.qrzlo.webshop.data.domain.PurchaseItem;
@@ -33,6 +35,7 @@ public class PurchaseItemAPI
 		this.inventoryRepository = inventoryRepository;
 	}
 
+	@JsonView(Views.Checkout.class)
 	@PostMapping
 	public ResponseEntity<?> create(@RequestBody @Validated List<PurchaseItem> purchaseItems,
 									@AuthenticationPrincipal Customer customer)

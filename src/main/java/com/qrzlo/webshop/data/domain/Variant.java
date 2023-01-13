@@ -1,8 +1,6 @@
 package com.qrzlo.webshop.data.domain;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonView;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.qrzlo.webshop.data.Views;
 import lombok.Data;
 
@@ -16,18 +14,18 @@ import java.util.Set;
 
 @Data
 @Entity
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+//@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Variant
 {
-	@JsonView({Views.Basket.class, Views.Product.class})
+	@JsonView({Views.Basket.class, Views.Product.class, Views.Checkout.class})
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@JsonView({Views.Basket.class, Views.Catalog.class, Views.Product.class})
+	@JsonView({Views.Basket.class, Views.Catalog.class, Views.Product.class, Views.Checkout.class})
 	@NotNull
 	private Boolean singular;
-	@JsonView(Views.Product.class)
+	@JsonView({Views.Product.class, Views.Checkout.class})
 	@Size(max = 10000)
 	@Column(name = "DESCRIPTION")
 	private String extraDescription;
@@ -42,14 +40,14 @@ public class Variant
 	// to see whether the singular variant has been changed, if so, change
 	// the default price of the product as well.
 
-	@JsonView({Views.Basket.class, Views.Purchase.class})
+	@JsonView({Views.Basket.class, Views.Order.class, Views.Checkout.class})
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "PRODUCT")
 	private Product product;
-	@JsonView({Views.Basket.class, Views.Product.class, Views.Purchase.class})
+	@JsonView({Views.Basket.class, Views.Product.class, Views.Order.class, Views.Checkout.class})
 	@OneToMany(mappedBy = "variant")
 	private Set<Attribute> attributes;
-	@JsonView({Views.Basket.class, Views.Catalog.class, Views.Product.class, Views.Purchase.class})
+	@JsonView({Views.Basket.class, Views.Catalog.class, Views.Product.class, Views.Order.class, Views.Checkout.class})
 	@OneToMany(mappedBy = "variant")
 	@OrderBy("createdAt ASC")
 	private List<MediaFile> mediaFiles;

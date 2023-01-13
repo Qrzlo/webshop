@@ -18,7 +18,7 @@ import java.util.Objects;
 
 @Data
 @Entity
-@JsonIdentityInfo(scope= Merchant.class, generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+//@JsonIdentityInfo(scope=Inventory.class, generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Merchant implements UserDetails
 {
 	@JsonView(Views.Product.class)
@@ -29,7 +29,7 @@ public class Merchant implements UserDetails
 	@NotNull
 	@Size(min = 1, max = 200)
 	private String email;
-	@JsonView({Views.Product.class, Views.Purchase.class})
+	@JsonView({Views.Product.class, Views.Order.class})
 	@NotNull
 	@Size(min = 1, max = 100)
 	private String brand;

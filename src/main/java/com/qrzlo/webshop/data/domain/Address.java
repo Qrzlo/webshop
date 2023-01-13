@@ -11,7 +11,7 @@ import java.util.Objects;
 
 @Data
 @Entity
-@JsonIdentityInfo(scope = Address.class, generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+//@JsonIdentityInfo(scope = Address.class, generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Address
 {
 	@Id
@@ -21,19 +21,19 @@ public class Address
 //			pkColumnName = "name", valueColumnName = "value")
 	private Integer id;
 
-	@JsonView(Views.Purchase.class)
+	@JsonView(Views.Order.class)
 	@NotNull
 	@Size(min = 1, max = 60)
 	private String street;
-	@JsonView(Views.Purchase.class)
+	@JsonView(Views.Order.class)
 	@NotNull
 	@Size(min = 1, max = 60)
 	private String city;
-	@JsonView(Views.Purchase.class)
+	@JsonView(Views.Order.class)
 	@NotNull
 	@Size(min = 1, max = 30)
 	private String postalCode;
-	@JsonView(Views.Purchase.class)
+	@JsonView(Views.Order.class)
 	@NotNull
 	@Size(min = 2, max = 2)
 	private String country;

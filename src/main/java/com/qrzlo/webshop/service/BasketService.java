@@ -26,7 +26,7 @@ public class BasketService
 		this.inventoryRepository = inventoryRepository;
 	}
 
-	private Basket getBasket(Customer customer)
+	public Basket getBasket(Customer customer)
 	{
 		return basketRepository.findBasketByCustomer(customer).orElseThrow(() -> new AbsentDataException("No such basket found"));
 	}
@@ -47,16 +47,15 @@ public class BasketService
 				.filter(it -> it.getInventory().equals(basketItem.getInventory()))
 				.findAny()
 				.ifPresentOrElse(found ->
-						{
-							found.setAmount(found.getAmount() + basketItem.getAmount());
-							basketItemRepository.save(found);
-						},
-						() ->
-						{
-							basketItem.setBasket(basket);
-							basketItemRepository.save(basketItem);
-						});
-		System.out.println("basket item saved");
+					{
+						found.setAmount(found.getAmount() + basketItem.getAmount());
+						basketItemRepository.save(found);
+					},
+					() ->
+					{
+						basketItem.setBasket(basket);
+						basketItemRepository.save(basketItem);
+					});
 		basketRepository.save(basket);
 		updateBasket(basket);
 		return basketItem;
@@ -87,5 +86,11 @@ public class BasketService
 		var index = oldItemIndex(basket, basketItem);
 		basketItemRepository.delete(basket.getBasketItems().get(index));
 		updateBasket(basket);
+	}
+
+	public void clearBasket(Customer customer)
+	{
+		var basket = getBasket(customer);
+		basketItemRepository.deleteAll(basket.getBasketItems());
 	}
 }
