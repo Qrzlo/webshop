@@ -2,7 +2,6 @@ package com.qrzlo.webshop.web;
 
 import com.qrzlo.webshop.data.domain.Address;
 import com.qrzlo.webshop.data.domain.Customer;
-import com.qrzlo.webshop.data.repository.AddressRepository;
 import com.qrzlo.webshop.service.AddressService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;

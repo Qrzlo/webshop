@@ -4,6 +4,7 @@ import com.qrzlo.webshop.data.domain.MediaFile;
 import com.qrzlo.webshop.data.domain.Variant;
 import com.qrzlo.webshop.data.repository.MediaFileRepository;
 import com.qrzlo.webshop.data.repository.VariantRepository;
+import com.qrzlo.webshop.util.exception.AbsentDataException;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -28,29 +29,16 @@ public class MediaFileAPI
 	@PostMapping
 	public ResponseEntity<?> create(@RequestBody @Validated MediaFile mediaFile)
 	{
-		try
-		{
-			mediaFileRepository.save(mediaFile);
-			return ResponseEntity.ok(mediaFile);
-		}
-		catch (Exception e)
-		{
-			return ResponseEntity.badRequest().build();
-		}
+		mediaFileRepository.save(mediaFile);
+		return ResponseEntity.ok(mediaFile);
 	}
 
 	@GetMapping
 	public ResponseEntity<?> read(@RequestParam(name = "variant") Long variantId)
 	{
-		try
-		{
-			Variant variant = variantRepository.findById(variantId).orElseThrow();
-			List<MediaFile> mediaFiles = mediaFileRepository.findMediaFilesByVariantOrderByCreatedAt(variant);
-			return ResponseEntity.ok(mediaFiles);
-		}
-		catch (Exception e)
-		{
-			return ResponseEntity.badRequest().build();
-		}
+		Variant variant = variantRepository.findById(variantId)
+				.orElseThrow(() -> new AbsentDataException("The variant cannot be found"));
+		List<MediaFile> mediaFiles = mediaFileRepository.findMediaFilesByVariantOrderByCreatedAt(variant);
+		return ResponseEntity.ok(mediaFiles);
 	}
 }

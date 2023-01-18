@@ -4,6 +4,7 @@ import com.qrzlo.webshop.data.domain.Attribute;
 import com.qrzlo.webshop.data.repository.AttributeRepository;
 import com.qrzlo.webshop.data.repository.DimensionRepository;
 import com.qrzlo.webshop.data.repository.VariantRepository;
+import com.qrzlo.webshop.util.exception.InvalidRequestException;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -31,55 +32,33 @@ public class AttributeAPI
 	@PostMapping
 	public ResponseEntity<?> create(@RequestBody @Validated Attribute attribute)
 	{
-		try
-		{
-			var variant = variantRepository.findById(attribute.getVariant().getId()).orElseThrow();
-			var dimension = dimensionRepository.findById(attribute.getDimension().getId()).orElseThrow();
-			var old = attributeRepository.findAttributeByDimensionAndVariant(dimension, variant);
-			if (old != null)
-				throw new Exception("duplicate found!");
-			var product = variant.getProduct();
-			var exist = dimensionRepository.findDimensionsByProduct(product).contains(dimension);
-			if (!exist)
-				throw new Exception("this pair of dimension/variant already exists!");
-			var newAttribute = attributeRepository.save(attribute);
-			return ResponseEntity.ok(newAttribute);
-		}
-		catch (Exception e)
-		{
-			System.out.println(e.getMessage());
-			return ResponseEntity.badRequest().build();
-		}
+		var variant = variantRepository.findById(attribute.getVariant().getId()).orElseThrow();
+		var dimension = dimensionRepository.findById(attribute.getDimension().getId()).orElseThrow();
+		var old = attributeRepository.findAttributeByDimensionAndVariant(dimension, variant);
+		if (old != null)
+			throw new InvalidRequestException("duplicate found!");
+		var product = variant.getProduct();
+		var exist = dimensionRepository.findDimensionsByProduct(product).contains(dimension);
+		if (!exist)
+			throw new InvalidRequestException("this pair of dimension/variant already exists!");
+		var newAttribute = attributeRepository.save(attribute);
+		return ResponseEntity.ok(newAttribute);
 	}
 
 	@GetMapping(path = "/variant")
 	public ResponseEntity<?> readByVariant(@RequestParam(name = "variant") Long variantId)
 	{
-		try
-		{
-			var variant = variantRepository.findById(variantId).orElseThrow();
-			Set<Attribute> attributes = attributeRepository.findAttributesByVariant(variant);
-			return ResponseEntity.ok(attributes);
-		}
-		catch (Exception e)
-		{
-			return ResponseEntity.badRequest().build();
-		}
+		var variant = variantRepository.findById(variantId).orElseThrow();
+		Set<Attribute> attributes = attributeRepository.findAttributesByVariant(variant);
+		return ResponseEntity.ok(attributes);
 	}
 
 	@GetMapping(path = "/dimension")
 	public ResponseEntity<?> readByDimension(@RequestParam(name = "dimension") Integer dimensionId)
 	{
-		try
-		{
-			var dimension = dimensionRepository.findById(dimensionId).orElseThrow();
-			Set<Attribute> attributes = attributeRepository.findAttributesByDimension(dimension);
-			return ResponseEntity.ok(attributes);
-		}
-		catch (Exception e)
-		{
-			return ResponseEntity.badRequest().build();
-		}
+		var dimension = dimensionRepository.findById(dimensionId).orElseThrow();
+		Set<Attribute> attributes = attributeRepository.findAttributesByDimension(dimension);
+		return ResponseEntity.ok(attributes);
 	}
 
 }

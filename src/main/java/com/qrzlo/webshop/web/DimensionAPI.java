@@ -29,30 +29,16 @@ public class DimensionAPI
 	@PostMapping
 	public ResponseEntity<?> create(@RequestBody @Validated Dimension dimension)
 	{
-		try
-		{
-			var newDimension = dimensionRepository.save(dimension);
-			return ResponseEntity.ok(newDimension);
-		}
-		catch (Exception e)
-		{
-			return ResponseEntity.badRequest().build();
-		}
+		var newDimension = dimensionRepository.save(dimension);
+		return ResponseEntity.ok(newDimension);
 	}
 
 	@GetMapping
 	public ResponseEntity<?> read(@RequestParam(name = "product") Integer productId)
 	{
-		try
-		{
-			Product product = productRepository.findById(productId).orElseThrow();
-			List<Dimension> dimensions = dimensionRepository.findDimensionsByProduct(product);
-			return ResponseEntity.ok(dimensions);
-		}
-		catch (Exception e)
-		{
-			return ResponseEntity.badRequest().build();
-		}
+		Product product = productRepository.findById(productId).orElseThrow();
+		List<Dimension> dimensions = dimensionRepository.findDimensionsByProduct(product);
+		return ResponseEntity.ok(dimensions);
 	}
 }
 

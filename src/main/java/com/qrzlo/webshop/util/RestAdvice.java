@@ -2,6 +2,7 @@ package com.qrzlo.webshop.util;
 
 import com.qrzlo.webshop.util.exception.AbsentDataException;
 import com.qrzlo.webshop.util.exception.CorruptedDataException;
+import com.qrzlo.webshop.util.exception.InvalidRequestException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -33,6 +34,18 @@ public class RestAdvice
 	public RestError relevantDataNotFound(NoSuchElementException e)
 	{
 		return new RestError("The relevant data to be modified cannot be found", e.getMessage());
+	}
+
+	@ExceptionHandler(InvalidRequestException.class)
+	public RestError badRequest(InvalidRequestException e)
+	{
+		return new RestError("The request is invalid", e.getMessage());
+	}
+
+	@ExceptionHandler(RuntimeException.class)
+	public RestError catchAll(RuntimeException e)
+	{
+		return new RestError("Unknown error", e.getMessage());
 	}
 
 }

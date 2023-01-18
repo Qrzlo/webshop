@@ -33,20 +33,6 @@ public class BasketItemAPI
 		return ResponseEntity.ok(newItem);
 	}
 
-//	@GetMapping
-//	public ResponseEntity<?> read(@RequestParam(name = "basketitem") Long basketItemId)
-//	{
-//		try
-//		{
-//			var basketItem = basketItemRepository.findById(basketItemId).orElseThrow();
-//			return ResponseEntity.ok(basketItem);
-//		}
-//		catch (Exception e)
-//		{
-//			return ResponseEntity.badRequest().build();
-//		}
-//	}
-
 	@JsonView(Views.Basket.class)
 	@PutMapping
 	public ResponseEntity<?> update(@RequestBody BasketItem basketItem, @AuthenticationPrincipal Customer customer)

@@ -23,28 +23,14 @@ public class SeriesAPI
 	@PostMapping
 	public ResponseEntity<?> create(@RequestBody @Validated Series series)
 	{
-		try
-		{
-			var newSeries = seriesRepository.save(series);
-			return ResponseEntity.ok(newSeries);
-		}
-		catch (Exception e)
-		{
-			return ResponseEntity.badRequest().build();
-		}
+		var newSeries = seriesRepository.save(series);
+		return ResponseEntity.ok(newSeries);
 	}
 
 	@GetMapping
 	public ResponseEntity<?> read(@RequestParam(name = "series") Integer seriesId)
 	{
-		try
-		{
-			var series = seriesRepository.findById(seriesId).orElseThrow();
-			return ResponseEntity.ok(series);
-		}
-		catch (Exception e)
-		{
-			return ResponseEntity.badRequest().build();
-		}
+		var series = seriesRepository.findById(seriesId).orElseThrow();
+		return ResponseEntity.ok(series);
 	}
 }

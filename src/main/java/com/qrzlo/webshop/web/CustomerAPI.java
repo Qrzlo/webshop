@@ -37,21 +37,9 @@ public class CustomerAPI
 		customer.setPassword(passwordEncoder.encode(customer.getPassword()));
 		Basket basket = new Basket();
 		basket.setCustomer(customer);
-//		customer.setBasket(basket);
-		try
-		{
-			Customer created = customerRepository.save(customer);
-			basketRepository.save(basket);
-			return ResponseEntity.status(HttpStatus.CREATED).body(created);
-		}
-		// without the @Validated in param:
-		// 1. without the catch: 500 will be returned auto by spring, exception stacktrace in console
-		// 2. with the catch: exception catched here. Postman gets the string message specified below
-		catch (Exception e)
-		{
-			e.printStackTrace();
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("error message");
-		}
+		Customer created = customerRepository.save(customer);
+		basketRepository.save(basket);
+		return ResponseEntity.status(HttpStatus.CREATED).body(created);
 	}
 
 	@GetMapping("/session")

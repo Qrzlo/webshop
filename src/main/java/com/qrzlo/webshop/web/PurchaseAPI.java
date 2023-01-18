@@ -71,5 +71,11 @@ public class PurchaseAPI
 		return ResponseEntity.ok(purchaseService.updatePurchaseAddress(address, customer));
 	}
 
-
+	@JsonView(Views.Checkout.class)
+	@GetMapping(path = "/cancel")
+	public ResponseEntity cancelInitializedPurchase(@AuthenticationPrincipal Customer customer)
+	{
+		purchaseService.cancelInitializedPurchase(customer);
+		return ResponseEntity.ok().build();
+	}
 }

@@ -16,8 +16,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
+import java.util.stream.Collectors;
 
 @Service
 public class PurchaseService
@@ -49,11 +49,7 @@ public class PurchaseService
 		synchronized (userPurchaseService.getLock())
 		{
 			var exist = purchaseRepository.findPurchaseByCustomerAndStatus(customer, Purchase.STATUS.INITIALIZED);
-			exist.ifPresent(old ->
-			{
-				old.setStatus(Purchase.STATUS.CANCELLED);
-				purchaseRepository.save(old);
-			}); //return read(customer);
+			exist.ifPresent(p -> cancelInitializedPurchase(customer));
 			Purchase purchase = new Purchase();
 			purchase.setStatus(Purchase.STATUS.INITIALIZED);
 			purchase.setCustomer(customer);
@@ -140,11 +136,21 @@ public class PurchaseService
 		}
 	}
 
+	public void cancelInitializedPurchase(Customer customer)
+	{
+		var initializedPurchase = purchaseRepository
+			.findPurchaseByCustomerAndStatus(customer, Purchase.STATUS.INITIALIZED)
+			.orElseThrow(() -> new AbsentDataException("Cannot find the initialized purchase"));
+		var purchaseItems = purchaseItemRepository.findPurchaseItemsByPurchase(initializedPurchase);
+		purchaseItemRepository.deleteAll(purchaseItems);
+		purchaseRepository.delete(initializedPurchase);
+	}
+
 	public Purchase updatePurchaseAddress(Address address, Customer customer)
 	{
 		var initializedPurchase = readCurrent(customer);
 		var theAddress = addressRepository
-				.findById(address.getId())
+				.findByIdAndDeleted(address.getId(), false)
 				.orElseThrow(() -> new AbsentDataException("Cannot find the address"));
 		if (!theAddress.getCustomer().equals(customer))
 			throw new CorruptedDataException("This address is not from the customer");
@@ -154,7 +160,8 @@ public class PurchaseService
 
 	public List<Purchase> readAll(Customer customer)
 	{
-		return purchaseRepository.findPurchasesByCustomerOrderByCreatedAt(customer);
+		var all = purchaseRepository.findPurchasesByCustomerOrderByCreatedAt(customer);
+		return all.stream().filter(p -> p.getStatus() != Purchase.STATUS.INITIALIZED).collect(Collectors.toList());
 	}
 
 }

@@ -21,18 +21,19 @@ public class AddressService
 	public Address createAddress(Address address, Customer customer)
 	{
 		address.setCustomer(customer);
+		address.setDeleted(false);
 		var newAddress = addressRepository.save(address);
 		return newAddress;
 	}
 
 	public List<Address> readByCustomer(Customer customer)
 	{
-		return addressRepository.findAddressesByCustomer(customer);
+		return addressRepository.findAddressesByCustomerAndDeleted(customer, false);
 	}
 
 	public Address updateAddress(Address address, Customer customer)
 	{
-		var oldAddress = addressRepository.findById(address.getId()).orElseThrow();
+		var oldAddress = addressRepository.findByIdAndDeleted(address.getId(), false).orElseThrow();
 		if (!oldAddress.getCustomer().equals(customer))
 			throw new CorruptedDataException("customer id mismatch");
 		address.setCustomer(customer);
@@ -41,10 +42,11 @@ public class AddressService
 
 	public Address deleteAddress(Integer id, Customer customer)
 	{
-		var address = addressRepository.findById(id).orElseThrow();
+		var address = addressRepository.findByIdAndDeleted(id, false).orElseThrow();
 		if (!address.getCustomer().equals(customer))
 			throw new CorruptedDataException("customer id mismatch");
-		addressRepository.delete(address);
+		address.setDeleted(true);
+		addressRepository.save(address);
 		return address;
 	}
 }

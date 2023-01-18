@@ -30,17 +30,8 @@ public class MerchantAPI
 	@PostMapping
 	public Merchant save(@RequestBody @Validated Merchant merchant)
 	{
-		try
-		{
-			merchant.setPassword(passwordEncoder.encode(merchant.getPassword()));
-			Merchant created = merchantRepository.save(merchant);
-			return created;
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-			return null;
-		}
+		merchant.setPassword(passwordEncoder.encode(merchant.getPassword()));
+		Merchant created = merchantRepository.save(merchant);
+		return created;
 	}
-
 }

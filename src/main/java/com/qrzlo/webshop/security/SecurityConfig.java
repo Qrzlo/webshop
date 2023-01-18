@@ -67,7 +67,7 @@ public class SecurityConfig
 					.mvcMatchers("/customer", "/customer/**").hasRole(SecurityConstant.CUSTOMER_ROLE)
 					.mvcMatchers("/merchant", "/merchant/**").hasRole(SecurityConstant.MERCHANT_ROLE)
 					.mvcMatchers("/api/address/**").hasRole(SecurityConstant.CUSTOMER_ROLE)
-					// .mvcMatchers("/api/customer/session").hasRole(SecurityConstant.CUSTOMER_ROLE)
+					.mvcMatchers("/api/customer/session").hasRole(SecurityConstant.CUSTOMER_ROLE)
 					.mvcMatchers(HttpMethod.POST, "/api/product/").hasRole(SecurityConstant.MERCHANT_ROLE)
 					.mvcMatchers(HttpMethod.GET, "/api/product/").permitAll()
 					.anyRequest().permitAll()
@@ -80,7 +80,7 @@ public class SecurityConfig
 							List<String> authorities = authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();
 							if (authorities.contains(SecurityConstant.CUSTOMER_AUTHORITY))
 							{
-								response.setStatus(200);//.sendRedirect("/account");
+								response.setStatus(200);
 							}
 							else if (authorities.contains(SecurityConstant.MERCHANT_AUTHORITY))
 							{
@@ -98,7 +98,7 @@ public class SecurityConfig
 						.failureHandler((request, response, exception) ->
 						{
 							System.out.println("in failure handler!! this is not working..");
-							response.sendRedirect("/login");
+							response.setStatus(400);
 						})
 				.and().logout().logoutSuccessUrl("/login")
 				.and().csrf().disable()

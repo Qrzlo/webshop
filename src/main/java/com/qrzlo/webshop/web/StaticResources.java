@@ -2,6 +2,7 @@ package com.qrzlo.webshop.web;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 /**
  * top level html files need to be remapped here
@@ -10,17 +11,17 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class StaticResources
 {
 
-	@GetMapping({"/",
+	@GetMapping(value = {"/",
 			"/account",
 			"/catalog",
-			"/product/**",
 			"/account",
 			"/login",
+			"/product",
+			"/product/{id}",
 			"/basket",
 			"/checkout"})
-	public String index()
+	public String indexByTopPaths(@PathVariable(required = false) String id)
 	{
 		return "index.html";
 	}
-
 }

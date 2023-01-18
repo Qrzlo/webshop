@@ -37,6 +37,9 @@ public class Address
 	@NotNull
 	@Size(min = 2, max = 2)
 	private String country;
+	@JsonIgnore
+	@NotNull
+	private boolean deleted = false;
 
 	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	@ManyToOne(optional = false)

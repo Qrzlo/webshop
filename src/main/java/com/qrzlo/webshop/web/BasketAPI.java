@@ -29,15 +29,8 @@ public class BasketAPI
 	@GetMapping
 	public ResponseEntity<?> read(@AuthenticationPrincipal Customer customer)
 	{
-		try
-		{
-			var basket = basketService.getBasket(customer);
-			basket.updatePrice();
-			return ResponseEntity.ok(basket);
-		}
-		catch (Exception e)
-		{
-			return ResponseEntity.badRequest().build();
-		}
+		var basket = basketService.getBasket(customer);
+		basket.updatePrice();
+		return ResponseEntity.ok(basket);
 	}
 }
