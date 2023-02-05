@@ -57,6 +57,11 @@ public class PurchaseService
 		}
 	}
 
+	public void refreshPurchase(Purchase purchase)
+	{
+
+	}
+
 	public Purchase readCurrent(Customer customer)
 	{
 		var initializedPurchase = purchaseRepository
@@ -71,7 +76,8 @@ public class PurchaseService
 					.mapToDouble(i -> i.getInventory().getPrice() * i.getAmount())
 					.sum();
 			initializedPurchase.setTotalPrice(totalPrice);
-			if (initializedPurchase.getAddress() != null) {
+			if (initializedPurchase.getAddress() != null)
+			{
 				String country = initializedPurchase.getAddress().getCountry();
 				Double shippingCost = 10d;
 				if ("NL".equalsIgnoreCase(country))
@@ -95,7 +101,6 @@ public class PurchaseService
 		return purchaseRepository.findPurchasesByCustomerAndCreatedAtIsBetweenOrderByCreatedAt(customer, from, to);
 	}
 
-	@Transactional
 	public Purchase finalizePurchase(Customer customer)
 	{
 		var purchase = readCurrent(customer);
@@ -107,33 +112,43 @@ public class PurchaseService
 		if (purchase.getTotalPrice() == null || purchase.getPaidPrice() == null)
 			throw new InvalidRequestException("prices are not calculated");
 		var locks = new ArrayList<Lock>(items.size());
+		Purchase placedPurchase;
 		try
 		{
 			items.sort(Comparator.comparing(i -> i.getInventory().getId()));
 			items.forEach(item ->
 			{
 				var lock = inventoryLock.getLock(item.getInventory());
-				while (!lock.tryLock()) {}
+				while (!lock.tryLock())
+				{
+				}
 				locks.add(lock);
 			});
-			items.forEach(i ->
-			{
-				var inventory = i.getInventory();
-				inventory.setAmount(inventory.getAmount() - i.getAmount());
-				inventoryRepository.save(inventory);
-			});
-			purchase.setStatus(Purchase.STATUS.PLACED);
-			var placedPurchase = purchaseRepository.save(purchase);
-			var basket = basketRepository
-					.findBasketByCustomer(customer)
-					.orElseThrow(() -> new AbsentDataException("Cannot find the basket of the customer"));
-			basketItemRepository.deleteAll(basket.getBasketItems());
-			return placedPurchase;
+			placedPurchase = processPurchase(customer, purchase, items);
 		}
 		finally
 		{
 			locks.forEach(Lock::unlock);
 		}
+		return placedPurchase;
+	}
+
+	@Transactional
+	public Purchase processPurchase(Customer customer, Purchase purchase, List<PurchaseItem> items)
+	{
+		items.forEach(i ->
+		{
+			var inventory = i.getInventory();
+			inventory.setAmount(inventory.getAmount() - i.getAmount());
+			inventoryRepository.save(inventory);
+		});
+		purchase.setStatus(Purchase.STATUS.PLACED);
+		var placedPurchase = purchaseRepository.save(purchase);
+		var basket = basketRepository
+				.findBasketByCustomer(customer)
+				.orElseThrow(() -> new AbsentDataException("Cannot find the basket of the customer"));
+		basketItemRepository.deleteAll(basket.getBasketItems());
+		return placedPurchase;
 	}
 
 	public void cancelInitializedPurchase(Customer customer)

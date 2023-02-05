@@ -4,6 +4,7 @@ import com.qrzlo.webshop.data.domain.Category;
 import com.qrzlo.webshop.data.domain.Product;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
 import javax.validation.constraints.NotNull;
@@ -18,4 +19,7 @@ public interface ProductRepository extends PagingAndSortingRepository<Product, I
 	Page<Product> findProductsByCategoriesIn(Collection<Category> categories, Pageable pageable);
 	List<Product> findProductsByNameContainsIgnoreCase(String keyword);
 	List<Product> findProductsByNameContainsIgnoreCaseAndCategories(String keyword, Category category);
+
+	@Query("SELECT name FROM Product")
+	List<String> getNames();
 }

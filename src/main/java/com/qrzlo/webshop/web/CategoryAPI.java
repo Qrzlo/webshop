@@ -1,6 +1,5 @@
 package com.qrzlo.webshop.web;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.qrzlo.webshop.data.domain.Category;
 import com.qrzlo.webshop.data.repository.CategoryRepository;
 import com.qrzlo.webshop.util.exception.AbsentDataException;
@@ -9,7 +8,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
@@ -47,70 +45,5 @@ public class CategoryAPI
 		var all = categoryRepository.findAll();
 		var top = all.stream().filter(a -> a.getParent() == null).collect(Collectors.toSet());
 		return ResponseEntity.ok(top);
-	}
-
-	private class Tree
-	{
-		private Node root;
-		@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-		private Set<Node> all = new HashSet<>();
-
-		public Node getRoot()
-		{
-			return root;
-		}
-
-		public void setRoot(Node root)
-		{
-			this.root = root;
-		}
-
-		public void addNode(Node n)
-		{
-			this.all.add(n);
-		}
-
-		public Node getNode(Node n)
-		{
-			for (Node node : all)
-				if (node.equals(n))
-					return node;
-			return null;
-		}
-
-		public Tree()
-		{
-		}
-
-	}
-	private class Node
-	{
-		private Category value;
-		private List<Node> children = new ArrayList();
-
-		@Override
-		public boolean equals(Object o)
-		{
-			if (this == o) return true;
-			if (o == null || getClass() != o.getClass()) return false;
-			Node node = (Node) o;
-			return Objects.equals(value, node.value);
-		}
-
-		@Override
-		public int hashCode()
-		{
-			return Objects.hash(value);
-		}
-
-		public Node(Category value)
-		{
-			this.value = value;
-		}
-
-		public void addChild(Node c)
-		{
-			this.children.add(c);
-		}
 	}
 }
