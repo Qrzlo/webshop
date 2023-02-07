@@ -17,6 +17,12 @@ public class WebshopApplication
 		SpringApplication.run(WebshopApplication.class, args);
 	}
 
+	/**
+	 * Create a default customer if there is none in the DB
+	 * @param customerAPI
+	 * @param customerRepository
+	 * @return
+	 */
 	@Bean
 	public CommandLineRunner customerAndBasket(CustomerAPI customerAPI, CustomerRepository customerRepository)
 	{

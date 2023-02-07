@@ -21,6 +21,13 @@ public class VariantService
 		this.productRepository = productRepository;
 	}
 
+	/**
+	 * Create a variant for the product
+	 * The variant is set to be singular(default) if this is the only variant of the product
+	 * Optionally let the {@code singular} status of this variant override the existing variants
+	 * @param variant the new variant to be added
+	 * @return
+	 */
 	public Variant create(Variant variant)
 	{
 		Set<Variant> variants = variantRepository.findVariantsByProduct(variant.getProduct());
@@ -30,8 +37,11 @@ public class VariantService
 		}
 		else if (variant.getSingular())	// >= 1:
 		{
-			variants.stream().filter(Variant::getSingular).forEach(v -> v.setSingular(false));
-			variantRepository.saveAll(variants);
+			variants.stream().filter(Variant::getSingular).forEach(v ->
+			{
+				v.setSingular(false);
+				variantRepository.save(v);
+			});
 		}
 		return variantRepository.save(variant);
 	}

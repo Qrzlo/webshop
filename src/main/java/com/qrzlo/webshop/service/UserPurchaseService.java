@@ -13,6 +13,10 @@ public class UserPurchaseService
 	{
 	}
 
+	/**
+	 * Get the lock for the current customer session
+	 * @return
+	 */
 	public Object getLock()
 	{
 		return lock;
