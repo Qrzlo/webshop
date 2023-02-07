@@ -31,11 +31,22 @@ public class BasketService
 		return basketRepository.findBasketByCustomer(customer).orElseThrow(() -> new AbsentDataException("No such basket found"));
 	}
 
+	/**
+	 * A helper method that updates the last-modified field {@code lastModified}
+	 * @param basket
+	 */
 	private void updateBasket(Basket basket)
 	{
 		basket.setLastModified(LocalDateTime.now());
 	}
 
+	/**
+	 * Create a new basket item: if there is one with the same inventory id, the new amount will be added;
+	 * otherwise a new item is saved.
+	 * @param basketItem the basket item to be saved or updated
+	 * @param customer the owner of the basket
+	 * @return the basket item to be saved
+	 */
 	public BasketItem createNewItem(BasketItem basketItem, Customer customer)
 	{
 		var basket = getBasket(customer);
@@ -69,6 +80,12 @@ public class BasketService
 		return index;
 	}
 
+	/**
+	 * Set a new {@code amount} for the basket item
+	 * @param basketItem the basket item that exists in the basket
+	 * @param customer the owner of the basket
+	 * @return the modified basket item
+	 */
 	public BasketItem updateOldItem(BasketItem basketItem, Customer customer)
 	{
 		var basket = getBasket(customer);

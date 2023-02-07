@@ -31,6 +31,13 @@ public class PurchaseItemService
 		this.purchaseService = purchaseService;
 	}
 
+	/**
+	 * Create all purchase items for the customer
+	 * @param purchaseItems cannot contain duplicates of the same inventory, cannot exceed the current amount of
+	 *                      inventory available
+	 * @param customer
+	 * @return
+	 */
 	public Iterable<PurchaseItem> create(List<PurchaseItem> purchaseItems, Customer customer)
 	{
 		var purchase = purchaseService.readCurrent(customer);

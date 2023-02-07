@@ -17,6 +17,11 @@ public class InventoryLock
 		locks = new ConcurrentHashMap<>();
 	}
 
+	/**
+	 * Obtain the lock for the given inventory
+	 * @param inventory
+	 * @return
+	 */
 	public Lock getLock(Inventory inventory)
 	{
 		Long id = inventory.getId();

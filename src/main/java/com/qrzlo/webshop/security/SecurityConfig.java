@@ -59,6 +59,12 @@ public class SecurityConfig
 	}
 
 
+	/**
+	 * Merchants and admins are not developed yet. The method filters requests according to guest/customer.
+	 * @param httpSecurity
+	 * @return
+	 * @throws Exception
+	 */
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception
 	{
@@ -67,6 +73,10 @@ public class SecurityConfig
 					.mvcMatchers("/customer", "/customer/**").hasRole(SecurityConstant.CUSTOMER_ROLE)
 					.mvcMatchers("/merchant", "/merchant/**").hasRole(SecurityConstant.MERCHANT_ROLE)
 					.mvcMatchers("/api/address/**").hasRole(SecurityConstant.CUSTOMER_ROLE)
+					.mvcMatchers("/api/basket/**").hasRole(SecurityConstant.CUSTOMER_ROLE)
+					.mvcMatchers("/api/basketitem/**").hasRole(SecurityConstant.CUSTOMER_ROLE)
+					.mvcMatchers("/api/purchase/**").hasRole(SecurityConstant.CUSTOMER_ROLE)
+					.mvcMatchers("/api/purchaseitem/**").hasRole(SecurityConstant.CUSTOMER_ROLE)
 					.mvcMatchers("/api/customer/session").hasRole(SecurityConstant.CUSTOMER_ROLE)
 					.mvcMatchers(HttpMethod.POST, "/api/product/").hasRole(SecurityConstant.MERCHANT_ROLE)
 					.mvcMatchers(HttpMethod.GET, "/api/product/").permitAll()

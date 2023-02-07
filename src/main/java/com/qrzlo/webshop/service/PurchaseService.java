@@ -44,6 +44,11 @@ public class PurchaseService
 		this.inventoryLock = inventoryLock;
 	}
 
+	/**
+	 * Only one active purchase can be initialized by each customer
+	 * @param customer
+	 * @return
+	 */
 	public Purchase initialize(Customer customer)
 	{
 		synchronized (userPurchaseService.getLock())
@@ -57,11 +62,11 @@ public class PurchaseService
 		}
 	}
 
-	public void refreshPurchase(Purchase purchase)
-	{
-
-	}
-
+	/**
+	 * Read the currently active purchase. Update the purchase price and price to be paid if the address is set
+	 * @param customer
+	 * @return
+	 */
 	public Purchase readCurrent(Customer customer)
 	{
 		var initializedPurchase = purchaseRepository
@@ -89,6 +94,12 @@ public class PurchaseService
 		return updatedPurchase;
 	}
 
+	/**
+	 * Not used by the frontend
+	 * @param year
+	 * @param customer
+	 * @return
+	 */
 	public List<Purchase> readByYear(Integer year, Customer customer)
 	{
 		final Integer THIS_YEAR = LocalDate.now().getYear();
@@ -101,6 +112,12 @@ public class PurchaseService
 		return purchaseRepository.findPurchasesByCustomerAndCreatedAtIsBetweenOrderByCreatedAt(customer, from, to);
 	}
 
+	/**
+	 * Finalize a purchase: ensure there are some items, the address is not null, and the prices are calculated
+	 * Acquire the locks for all the {@code inventory} objects order by their ids
+	 * @param customer
+	 * @return
+	 */
 	public Purchase finalizePurchase(Customer customer)
 	{
 		var purchase = readCurrent(customer);
@@ -133,6 +150,15 @@ public class PurchaseService
 		return placedPurchase;
 	}
 
+	/**
+	 * Start a transaction: decrement the {@code inventory} {@code amount}s accordingly
+	 * Change the status of the purchase to PLACED
+	 * Clear all the basket items of the customer
+	 * @param customer
+	 * @param purchase
+	 * @param items the purchase items associated with this purchase
+	 * @return
+	 */
 	@Transactional
 	public Purchase processPurchase(Customer customer, Purchase purchase, List<PurchaseItem> items)
 	{
@@ -161,6 +187,12 @@ public class PurchaseService
 		purchaseRepository.delete(initializedPurchase);
 	}
 
+	/**
+	 * Associate an address of the customer with the current active purchase
+	 * @param address
+	 * @param customer
+	 * @return
+	 */
 	public Purchase updatePurchaseAddress(Address address, Customer customer)
 	{
 		var initializedPurchase = readCurrent(customer);

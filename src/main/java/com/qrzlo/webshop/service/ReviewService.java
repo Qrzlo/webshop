@@ -30,6 +30,12 @@ public class ReviewService
 		this.productRepository = productRepository;
 	}
 
+	/**
+	 * Not invoked by the frontend yet
+	 * @param review
+	 * @param customer
+	 * @return
+	 */
 	public Review create(Review review, Customer customer)
 	{
 		var product = productRepository.findById(review.getProduct().getId())

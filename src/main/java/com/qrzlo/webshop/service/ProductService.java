@@ -12,7 +12,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -33,6 +32,15 @@ public class ProductService
 		return productRepository.save(product);
 	}
 
+	/**
+	 * Find products by different filters and options
+	 * @param categoryId optional: if not set or set to 1, then no category
+	 * @param size page size
+	 * @param page page number, starting at 1
+	 * @param prop the property by which to sort the result
+	 * @param dir either "ASC" or "DESC"
+	 * @return the products found with the total number of pages and the amount of products under these parameters
+	 */
 	public ProductAPI.ListOfProductsFiltered filter(Integer categoryId,
 													Integer size,
 													Integer page,
@@ -73,6 +81,12 @@ public class ProductService
 		return success;
 	}
 
+	/**
+	 * Find products that contain the {@code keyword} in the {@code name} field, in some category
+	 * @param keyword the keyword to match with
+	 * @param categoryId optional, if not set then perform a full search
+	 * @return the products found and the size of the results
+	 */
 	public ProductAPI.ListOfProductsSearched search(String keyword, Integer categoryId)
 	{
 		if (categoryId == null)

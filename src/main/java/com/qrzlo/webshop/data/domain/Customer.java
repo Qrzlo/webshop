@@ -35,9 +35,6 @@ public class Customer implements UserDetails
 	@Column(name = "CREATED_AT")
 	private LocalDateTime createdAt = LocalDateTime.now();
 
-//	@JsonIgnore
-//	@OneToOne(fetch = FetchType.LAZY, mappedBy = "customer", optional = false)
-//	private Basket basket;
 	@JsonIgnore
 	@OneToMany(mappedBy = "customer")
 	@OrderBy("createdAt ASC")

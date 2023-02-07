@@ -22,13 +22,13 @@ public class WebshopApplication
 	{
 		return args ->
 		{
-			var exist = customerRepository.findCustomerByEmail("x@c.com");
+			var exist = customerRepository.findCustomerByEmail("chong@customer.com");
 			if (exist != null)
 				return;
 			Customer customer = new Customer();
-			customer.setEmail("x@c.com");
-			customer.setName("namec");
-			customer.setPassword("passwordx");
+			customer.setEmail("chong@customer.com");
+			customer.setName("chong");
+			customer.setPassword("chong");
 			customerAPI.create(customer);
 		};
 	}
