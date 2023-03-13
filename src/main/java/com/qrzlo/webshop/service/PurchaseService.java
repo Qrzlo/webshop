@@ -25,23 +25,19 @@ public class PurchaseService
 	private PurchaseRepository purchaseRepository;
 	private AddressRepository addressRepository;
 	private PurchaseItemRepository purchaseItemRepository;
-	private InventoryRepository inventoryRepository;
-	private BasketRepository basketRepository;
-	private BasketItemRepository basketItemRepository;
 
 	private UserPurchaseService userPurchaseService;
 	private InventoryLock inventoryLock;
+	private TransactionService transactionService;
 
-	public PurchaseService(PurchaseRepository purchaseRepository, AddressRepository addressRepository, PurchaseItemRepository purchaseItemRepository, InventoryRepository inventoryRepository, BasketRepository basketRepository, BasketItemRepository basketItemRepository, UserPurchaseService userPurchaseService, InventoryLock inventoryLock)
+	public PurchaseService(PurchaseRepository purchaseRepository, AddressRepository addressRepository, PurchaseItemRepository purchaseItemRepository, InventoryRepository inventoryRepository, BasketRepository basketRepository, BasketItemRepository basketItemRepository, UserPurchaseService userPurchaseService, InventoryLock inventoryLock, TransactionService transactionService)
 	{
 		this.purchaseRepository = purchaseRepository;
 		this.addressRepository = addressRepository;
 		this.purchaseItemRepository = purchaseItemRepository;
-		this.inventoryRepository = inventoryRepository;
-		this.basketRepository = basketRepository;
-		this.basketItemRepository = basketItemRepository;
 		this.userPurchaseService = userPurchaseService;
 		this.inventoryLock = inventoryLock;
+		this.transactionService = transactionService;
 	}
 
 	/**
@@ -141,39 +137,12 @@ public class PurchaseService
 				}
 				locks.add(lock);
 			});
-			placedPurchase = processPurchase(customer, purchase, items);
+			placedPurchase = transactionService.processPurchase(customer, purchase, items);
 		}
 		finally
 		{
 			locks.forEach(Lock::unlock);
 		}
-		return placedPurchase;
-	}
-
-	/**
-	 * Start a transaction: decrement the {@code inventory} {@code amount}s accordingly
-	 * Change the status of the purchase to PLACED
-	 * Clear all the basket items of the customer
-	 * @param customer
-	 * @param purchase
-	 * @param items the purchase items associated with this purchase
-	 * @return
-	 */
-	@Transactional
-	public Purchase processPurchase(Customer customer, Purchase purchase, List<PurchaseItem> items)
-	{
-		items.forEach(i ->
-		{
-			var inventory = i.getInventory();
-			inventory.setAmount(inventory.getAmount() - i.getAmount());
-			inventoryRepository.save(inventory);
-		});
-		purchase.setStatus(Purchase.STATUS.PLACED);
-		var placedPurchase = purchaseRepository.save(purchase);
-		var basket = basketRepository
-				.findBasketByCustomer(customer)
-				.orElseThrow(() -> new AbsentDataException("Cannot find the basket of the customer"));
-		basketItemRepository.deleteAll(basket.getBasketItems());
 		return placedPurchase;
 	}
 
